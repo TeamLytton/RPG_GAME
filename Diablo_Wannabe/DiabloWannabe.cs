@@ -51,13 +51,12 @@ namespace Diablo_Wannabe
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            KeyboardState keyState = Keyboard.GetState();
+            Input.Manager.Update();
 
-            if (keyState.IsKeyDown(Keys.Escape))
+            if (Input.Manager.KeyPressed(Keys.Escape))
             {
                 this.Exit();
             }
-
             ScreenManager.Manager.Update(gameTime);
 
             base.Update(gameTime);

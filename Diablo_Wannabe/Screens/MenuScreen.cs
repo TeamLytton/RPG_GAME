@@ -1,4 +1,5 @@
-﻿using Diablo_Wannabe.ImageProcessing;
+﻿using System.Xml.Serialization;
+using Diablo_Wannabe.ImageProcessing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -22,6 +23,11 @@ namespace Diablo_Wannabe.Screens
 
         public override void Update(GameTime gameTime)
         {
+            //if for example the mouse cursor X & Y are inside the new game coordinates for example,
+            //change the image path dynamically here dont change the image class by making it take array of paths which has no logic
+            //or you can see how you can make a list of images and load their paths before-hand, and change the image accordingly
+            //to mouse cursor position
+
             base.Update(gameTime);
             MenuImage.Update(gameTime);
         }

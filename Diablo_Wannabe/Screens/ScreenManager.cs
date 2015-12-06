@@ -28,7 +28,7 @@ namespace Diablo_Wannabe.Screens
 
         }
 
-        public static ScreenManager Manager => manager ?? (manager = new ScreenManager());
+        public static ScreenManager Manager = manager ?? (manager = new ScreenManager());
 
         public void LoadContent(ContentManager content)
         {

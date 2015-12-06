@@ -42,6 +42,7 @@
     <Compile Include="Entities\GameObject.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\Unit.cs" />
+    <Compile Include="ImageProcessing\FadeEffect.cs" />
     <Compile Include="ImageProcessing\Image.cs" />
     <Compile Include="ImageProcessing\ImageEffect.cs" />
     <Compile Include="Input.cs" />
@@ -64,7 +65,9 @@
   <ItemGroup>
     <Content Include="Icon.ico" />
     <Content Include="LoadXml\GameScreen.xml" />
-    <Content Include="LoadXml\MenuScreen.xml" />
+    <Content Include="LoadXml\MenuScreen.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="LoadXml\Player.xml" />
   </ItemGroup>
   <ItemGroup>

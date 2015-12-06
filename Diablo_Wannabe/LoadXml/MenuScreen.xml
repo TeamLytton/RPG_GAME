@@ -2,6 +2,7 @@
 <MenuScreen>
   <MenuImage>
     <Path>new-game</Path>
+    <Effects>FadeEffect</Effects>
   </MenuImage>
 </MenuScreen>
   

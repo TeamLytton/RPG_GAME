@@ -17,13 +17,17 @@ namespace Diablo_Wannabe.ImageProcessing
         private SpriteFont spriteFont;
         private Dictionary<string, ImageEffect> allEffects;
 
-
         public float Alpha;
-        public string Text, FontName, Path;
+        public string Text, FontName;
         public string Effect;
+        public bool IsActive;
+        public FadeEffect FadeEffect;
+
+        [XmlElement("Path")]
+        public string Path;
 
         public Vector2 Position, Scale;
- 
+
         [XmlIgnore]
         public Texture2D Texture;
         public Rectangle SourceRect;
@@ -32,7 +36,7 @@ namespace Diablo_Wannabe.ImageProcessing
         {
             if (effect == null)
             {
-                effect = (T) Activator.CreateInstance(typeof (T));
+                effect = (T)Activator.CreateInstance(typeof(T));
             }
             else
             {
@@ -71,6 +75,7 @@ namespace Diablo_Wannabe.ImageProcessing
         {
             this.Path = string.Empty;
             this.Text = string.Empty;
+            this.Effect = string.Empty;
             this.FontName = "fonts/default_font";
             this.Position = Vector2.Zero;
             this.Scale = Vector2.One;
@@ -81,7 +86,7 @@ namespace Diablo_Wannabe.ImageProcessing
 
         public void LoadContent()
         {
-            content = 
+            content =
                 new ContentManager
                 (ScreenManager.Manager.Content.ServiceProvider,
                  ScreenManager.Manager.Content.RootDirectory);
@@ -109,8 +114,8 @@ namespace Diablo_Wannabe.ImageProcessing
             }
 
             renderTarget = new RenderTarget2D
-                (ScreenManager.Manager.GraphicsDevice, 
-                (int)dimensions.X, 
+                (ScreenManager.Manager.GraphicsDevice,
+                (int)dimensions.X,
                 (int)dimensions.Y);
 
             ScreenManager.Manager.GraphicsDevice.SetRenderTarget(renderTarget);
@@ -118,7 +123,7 @@ namespace Diablo_Wannabe.ImageProcessing
             ScreenManager.Manager.SpriteBatch.Begin();
             if (Texture != null)
             {
-            ScreenManager.Manager.SpriteBatch.Draw(Texture, Vector2.Zero, Color.White);
+                ScreenManager.Manager.SpriteBatch.Draw(Texture, Vector2.Zero, Color.White);
             }
             ScreenManager.Manager.SpriteBatch.DrawString(spriteFont, Text, Vector2.Zero, Color.White);
             ScreenManager.Manager.SpriteBatch.End();
@@ -126,28 +131,45 @@ namespace Diablo_Wannabe.ImageProcessing
             Texture = renderTarget;
 
             ScreenManager.Manager.GraphicsDevice.SetRenderTarget(null);
+            SetEffect<FadeEffect>(ref FadeEffect);
+            if (Effect != string.Empty)
+            {
+                string[] split = Effect.Split(':');
+                foreach (var item in split)
+                {
+                    ActivateEffect(item);
+                }
+            }
         }
 
         public void UnloadContent()
         {
             content.Unload();
+            foreach (var effect in allEffects)
+            {
+                effect.Value.UnloadContent();
+            }
         }
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
+            foreach (var effect in allEffects)
+            {
+                effect.Value.Update(gameTime);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             this.origin = new Vector2(this.SourceRect.Width / 2, this.SourceRect.Height / 2);
-            spriteBatch.Draw(Texture, 
-                Position + origin, 
-                SourceRect, 
+            spriteBatch.Draw(Texture,
+                Position + origin,
+                SourceRect,
                 Color.White * Alpha,
-                0.0f, 
-                origin, 
-                Scale, 
-                SpriteEffects.None, 
+                0.0f,
+                origin,
+                Scale,
+                SpriteEffects.None,
                 0.0f);
         }
     }

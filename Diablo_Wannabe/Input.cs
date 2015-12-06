@@ -12,7 +12,7 @@ namespace Diablo_Wannabe
 
         private static Input manager;
 
-        public static Input Manager => manager ?? (manager = new Input());
+        public static Input Manager = manager ?? (manager = new Input());
 
         private Input()
         {

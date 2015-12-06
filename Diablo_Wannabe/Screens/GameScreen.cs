@@ -9,7 +9,7 @@ namespace Diablo_Wannabe.Screens
 {
     public class GameScreen : Screen
     {
-        public Image testing;
+         public Image testing;
 
          private Player player;
 

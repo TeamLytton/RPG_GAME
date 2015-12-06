@@ -1,2 +1,6 @@
-# RPG_GAME
-COPY BEFORE COMMIT PLEASE I'M TIRED OF DELETING THIS REPO AGAIN AND AGAIN
+# Rpg-Game
+Created by:
+-- KrasiNedew
+-- mariyastancheva
+-- T316
+-- zornitsa25

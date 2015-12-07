@@ -16,15 +16,15 @@ namespace Diablo_Wannabe.Screens
         public GraphicsDevice GraphicsDevice;
         public SpriteBatch SpriteBatch;
 
-        private Screen CurrentScreen;
+        public Screen CurrentScreen;
 
         private ScreenManager()
         {
             this.Dimensions = new Vector2(800, 600);
             CurrentScreen = new MenuScreen();
-            this.xmlSerializator = new XmlSerializer<Screen>();
-            xmlSerializator.Type = CurrentScreen.Type;
-            CurrentScreen = xmlSerializator.Load("../../../LoadXml/MenuScreen.xml");
+            //this.xmlSerializator = new XmlSerializer<Screen>();
+            //xmlSerializator.Type = CurrentScreen.Type;
+            //CurrentScreen = xmlSerializator.Load("../../../LoadXml/MenuScreen.xml");
 
         }
 

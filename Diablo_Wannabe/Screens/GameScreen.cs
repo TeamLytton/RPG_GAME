@@ -16,10 +16,12 @@ namespace Diablo_Wannabe.Screens
         public override void LoadContent()
         {
             base.LoadContent();
-            testing.LoadContent();
+            testing = new Image();
+            testing.Path = "only-background";
             player = new Player();
             var playerLoader = new XmlSerializer<Player> {Type = player.Type};
             player = playerLoader.Load("../../../LoadXml/Player.xml");
+            testing.LoadContent();
             player.LoadContent();
         }
 

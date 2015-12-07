@@ -23,7 +23,6 @@ namespace Diablo_Wannabe.ImageProcessing
         public bool IsActive;
         public FadeEffect FadeEffect;
 
-        [XmlElement("Path")]
         public string Path;
 
         public Vector2 Position, Scale;
@@ -32,44 +31,7 @@ namespace Diablo_Wannabe.ImageProcessing
         public Texture2D Texture;
         public Rectangle SourceRect;
 
-        private void SetEffect<T>(ref T effect)
-        {
-            if (effect == null)
-            {
-                effect = (T)Activator.CreateInstance(typeof(T));
-            }
-            else
-            {
-                (effect as ImageEffect).IsActive = true;
-                var obj = this;
-                (effect as ImageEffect).LoadContent(ref obj);
-            }
 
-            allEffects.Add(effect.GetType().ToString().Replace("Diablo_Wannabe.", ""), (effect as ImageEffect));
-        }
-
-        public void ActivateEffect(string effect)
-        {
-            if (!allEffects.ContainsKey(effect))
-            {
-                return;
-            }
-
-            allEffects[effect].IsActive = true;
-            var obj = this;
-            allEffects[effect].LoadContent(ref obj);
-        }
-
-        public void StopEffect(string effect)
-        {
-            if (!allEffects.ContainsKey(effect))
-            {
-                return;
-            }
-
-            allEffects[effect].IsActive = false;
-            allEffects[effect].UnloadContent();
-        }
 
         public Image()
         {
@@ -131,15 +93,15 @@ namespace Diablo_Wannabe.ImageProcessing
             Texture = renderTarget;
 
             ScreenManager.Manager.GraphicsDevice.SetRenderTarget(null);
-            SetEffect<FadeEffect>(ref FadeEffect);
-            if (Effect != string.Empty)
-            {
-                string[] split = Effect.Split(':');
-                foreach (var item in split)
-                {
-                    ActivateEffect(item);
-                }
-            }
+            //SetEffect<FadeEffect>(ref FadeEffect);
+            //if (Effect != string.Empty)
+            //{
+            //    string[] split = Effect.Split(':');
+            //    foreach (var item in split)
+            //    {
+            //        ActivateEffect(item);
+            //    }
+            //}
         }
 
         public void UnloadContent()
@@ -174,3 +136,42 @@ namespace Diablo_Wannabe.ImageProcessing
         }
     }
 }
+
+//private void SetEffect<T>(ref T effect)
+//{
+//    if (effect == null)
+//    {
+//        effect = (T)Activator.CreateInstance(typeof(T));
+//    }
+//    else
+//    {
+//        (effect as ImageEffect).IsActive = true;
+//        var obj = this;
+//        (effect as ImageEffect).LoadContent(ref obj);
+//    }
+
+//    allEffects.Add(effect.GetType().ToString().Replace("Diablo_Wannabe.", ""), (effect as ImageEffect));
+//}
+
+//public void ActivateEffect(string effect)
+//{
+//    if (!allEffects.ContainsKey(effect))
+//    {
+//        return;
+//    }
+
+//    allEffects[effect].IsActive = true;
+//    var obj = this;
+//    allEffects[effect].LoadContent(ref obj);
+//}
+
+//public void StopEffect(string effect)
+//{
+//    if (!allEffects.ContainsKey(effect))
+//    {
+//        return;
+//    }
+
+//    allEffects[effect].IsActive = false;
+//    allEffects[effect].UnloadContent();
+//}

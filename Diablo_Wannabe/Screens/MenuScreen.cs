@@ -19,7 +19,6 @@ namespace Diablo_Wannabe.Screens
         private bool openCredits;
         private bool Quit;
 
-
         public MenuScreen()
         {
             this.menuImages = new Image[5];

@@ -31,8 +31,6 @@ namespace Diablo_Wannabe.ImageProcessing
         public Texture2D Texture;
         public Rectangle SourceRect;
 
-
-
         public Image()
         {
             this.Path = string.Empty;

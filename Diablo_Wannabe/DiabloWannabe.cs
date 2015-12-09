@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace Diablo_Wannabe
 {
@@ -9,6 +10,7 @@ namespace Diablo_Wannabe
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        private Song backgroundSong;
 
         public DiabloWannabe()
         {
@@ -32,7 +34,9 @@ namespace Diablo_Wannabe
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ScreenManager.Manager.GraphicsDevice = this.GraphicsDevice;
             ScreenManager.Manager.SpriteBatch = this.spriteBatch;
-            ScreenManager.Manager.LoadContent(this.Content);    
+            ScreenManager.Manager.LoadContent(this.Content);
+            backgroundSong = Content.Load<Song>("sounds/deep_forest");
+            MediaPlayer.Play(backgroundSong);
         }
 
         /// <summary>

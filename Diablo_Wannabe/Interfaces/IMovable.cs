@@ -1,7 +1,9 @@
-﻿namespace Diablo_Wannabe.Interfaces
+﻿using Microsoft.Xna.Framework;
+
+namespace Diablo_Wannabe.Interfaces
 {
     public interface IMovable
     {
-        void Move();
+        void Move(GameTime gameTime);
     }
 }

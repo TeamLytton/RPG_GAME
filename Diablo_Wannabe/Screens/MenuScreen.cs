@@ -19,6 +19,7 @@ namespace Diablo_Wannabe.Screens
         private bool openCredits;
         private bool Quit;
 
+
         public MenuScreen()
         {
             this.menuImages = new Image[5];
@@ -100,7 +101,7 @@ namespace Diablo_Wannabe.Screens
             }
             else
             {
-                if (gameTime.TotalGameTime.TotalMilliseconds > timePassed.TotalMilliseconds + 50)
+                if (gameTime.TotalGameTime.TotalMilliseconds > timePassed.TotalMilliseconds + 150)
                 {
                     if (startNewGame)
                     {

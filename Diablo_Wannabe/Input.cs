@@ -8,7 +8,19 @@ namespace Diablo_Wannabe
         private KeyboardState keyState;
         private KeyboardState prevKeyState;
         private MouseState mouseState;
-        private MouseState prevMouseState;
+        private MouseState previousMouseState;
+
+        public MouseState MouseState
+        {
+            get { return this.mouseState; }
+            set { this.mouseState = value; }
+        }
+
+        public MouseState PreviousMouseState
+        {
+            get { return this.mouseState; }
+            set { this.mouseState = value; }
+        }
 
         private static Input manager;
 
@@ -23,7 +35,7 @@ namespace Diablo_Wannabe
         public void Update()
         {
             prevKeyState = keyState;
-            prevMouseState = mouseState;
+            previousMouseState = mouseState;
             keyState = Keyboard.GetState();
             mouseState = Mouse.GetState();
         }
@@ -42,23 +54,5 @@ namespace Diablo_Wannabe
         {
             return keys.Any(key => keyState.IsKeyDown(key));
         }
-
-        public bool MousePressed(params Buttons[] buttons)
-        {
-            return buttons.Any(button => mouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton == ButtonState.Released
-                                    || mouseState.RightButton == ButtonState.Pressed && prevMouseState.RightButton == ButtonState.Released);
-        }
-
-        public bool MouseReleased(params Buttons[] buttons)
-        {
-            return buttons.Any(button => mouseState.LeftButton == ButtonState.Released && prevMouseState.LeftButton == ButtonState.Pressed
-                                    || mouseState.RightButton == ButtonState.Released && prevMouseState.RightButton == ButtonState.Pressed);
-        }
-
-        public bool MouseDown(params Buttons[] buttons)
-        {
-            return buttons.Any(button => mouseState.LeftButton == ButtonState.Pressed || mouseState.RightButton == ButtonState.Pressed);
-        }
-
     }
 }

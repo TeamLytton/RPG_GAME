@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
 using Diablo_Wannabe.Entities;
 using Diablo_Wannabe.ImageProcessing;
-using Diablo_Wannabe.XmlSerialization;
+using Diablo_Wannabe.Map;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,40 +9,30 @@ namespace Diablo_Wannabe.Screens
 {
     public class GameScreen : Screen
     {
-         public Image testing;
-
+        public Map.Map map;
          private Player player;
 
         public override void LoadContent()
         {
             base.LoadContent();
-            testing = new Image();
-            testing.Path = "only-background";
-            player = new Player();
-            var playerLoader = new XmlSerializer<Player> {Type = player.Type};
-            player = playerLoader.Load("../../../LoadXml/Player.xml");
-            testing.LoadContent();
-            player.LoadContent();
+            this.map = new Map.Map();
+            this.map.FillMap();
         }
 
         public override void UnloadContent()
         {
             base.UnloadContent();
-            testing.UnloadContent();
-            player.UnloadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
-            testing.Update(gameTime);
             base.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            testing.Draw(spriteBatch);
+            map.Draw(spriteBatch);
             base.Draw(spriteBatch);    
-            player.Draw(spriteBatch);
         }
     }
 }

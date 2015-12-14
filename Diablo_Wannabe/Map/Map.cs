@@ -8,7 +8,7 @@ namespace Diablo_Wannabe.Map
 {
     public class Map
     {
-        private static List<Tile> tiles;
+        public List<Tile> tiles;
         private int posX;
         private int posY;
 
@@ -22,23 +22,23 @@ namespace Diablo_Wannabe.Map
                 string line = reader.ReadLine();
                 while (line != null)
                 {
-                    for (int i = 0; i < line.Length; i++)
+                    foreach (char t in line)
                     {
-                        switch (line[i])
+                        switch (t)
                         {
                             case 'G':
-                                tiles.Add(new Tile(0, 2, new Vector2(posX, posY), "tileset"));
+                                tiles.Add(new Tile(0, 2, new Vector2(posX, posY), true, "tileset"));
                                 tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
                                 posX += 64;
                                 break;
                             case 'R':
-                                tiles.Add(new Tile(0, 0, new Vector2(posX, posY), "tileset"));
+                                tiles.Add(new Tile(0, 0, new Vector2(posX, posY), false, "tileset"));
                                 tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
 
                                 posX += 64;
                                 break;
                             case 'S':
-                                tiles.Add(new Tile(0, 1, new Vector2(posX, posY), "tileset"));
+                                tiles.Add(new Tile(0, 1, new Vector2(posX, posY), true,"tileset"));
                                 tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
 
                                 posX += 64;

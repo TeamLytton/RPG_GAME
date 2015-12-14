@@ -14,6 +14,7 @@ namespace Diablo_Wannabe.ImageProcessing
         public Vector2 FrameDimensions;
         public Vector2 CurrentFrame;
         public Rectangle SourceRect;
+        public float RotationAngle;
         private int totalFramesX;
         private int totalFramesY;
 
@@ -27,6 +28,7 @@ namespace Diablo_Wannabe.ImageProcessing
             this.FrameDimensions = Vector2.Zero;
             this.CurrentFrame = Vector2.Zero;
             this.SourceRect = Rectangle.Empty;
+            this.RotationAngle = 0.0f;
         }
 
         public void LoadContent(ContentManager content)
@@ -39,21 +41,16 @@ namespace Diablo_Wannabe.ImageProcessing
 
         public void Update(GameTime gameTime, bool isActive)
         {
-            if (!isActive)
-            {
-                return;
-            }
-
             this.SourceRect = new Rectangle((int)this.FrameDimensions.X * (int)CurrentFrame.X, (int)this.FrameDimensions.Y * (int)this.CurrentFrame.Y, (int)this.FrameDimensions.X, (int)this.FrameDimensions.Y);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture,
-                Position + Origin,
+                Position,
                 SourceRect,
                 Color.White,
-                0.0f,
+                RotationAngle,
                 Origin,
                 1f,
                 SpriteEffects.None,

@@ -7,13 +7,7 @@ namespace Diablo_Wannabe.Entities
 {
     public class GameObject
     {
-        private Vector2 position;
-
-        public Vector2 Position
-        {
-            get { return this.position; }
-            set { this.position = value; }
-        }
+        public Vector2 Position;
 
         public virtual void LoadContent()
         {

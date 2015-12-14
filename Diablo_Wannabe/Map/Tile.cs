@@ -12,11 +12,13 @@ namespace Diablo_Wannabe.Map
         public SpriteSheet TileSprite;
         private int tileFrameX;
         private int tileFrameY;
+        public bool isPassable;
 
-        public Tile(int frameX, int frameY, Vector2 position, string path)
+        public Tile(int frameX, int frameY, Vector2 position, bool isPassable, string path)
         {
             this.TileFrameX = frameX;
             this.TileFrameY = frameY;
+            this.isPassable = isPassable;
 
             TileSprite = new SpriteSheet(10, 5, position, path)
             {

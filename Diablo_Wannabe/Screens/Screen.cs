@@ -10,6 +10,7 @@ namespace Diablo_Wannabe.Screens
     {
         protected ContentManager content;
 
+
         [XmlIgnore]
         public Type Type;
 

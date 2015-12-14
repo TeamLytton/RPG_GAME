@@ -89,7 +89,7 @@ namespace Diablo_Wannabe.Entities
                 }
                 else
                 {
-                    Debug.WriteLine("Maika ti daeba");
+                    Debug.WriteLine("Blusnah se");
                 }
                 
             }

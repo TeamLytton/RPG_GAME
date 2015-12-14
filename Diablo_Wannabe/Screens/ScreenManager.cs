@@ -18,10 +18,13 @@ namespace Diablo_Wannabe.Screens
 
         public Screen CurrentScreen;
 
+        public GameScreen GameScreen;
+
         private ScreenManager()
         {
             this.Dimensions = new Vector2(800, 600);
             CurrentScreen = new MenuScreen();
+            GameScreen = new GameScreen();
             //this.xmlSerializator = new XmlSerializer<Screen>();
             //xmlSerializator.Type = CurrentScreen.Type;
             //CurrentScreen = xmlSerializator.Load("../../../LoadXml/MenuScreen.xml");
@@ -34,6 +37,7 @@ namespace Diablo_Wannabe.Screens
         {
             this.Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             CurrentScreen.LoadContent();
+            GameScreen.LoadContent();
         }
 
         public void UnloadContent()

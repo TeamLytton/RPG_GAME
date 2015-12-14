@@ -10,7 +10,8 @@ namespace Diablo_Wannabe.Screens
     public class GameScreen : Screen
     {
         public Map.Map map;
-        private Player player;
+        public Player player;
+        public Enemy enemy;
 
         public override void LoadContent()
         {
@@ -19,25 +20,29 @@ namespace Diablo_Wannabe.Screens
             this.map.FillMap();
             this.player = new Player();
             this.player.LoadContent();
+            this.enemy = new Enemy();
+            this.enemy.LoadContent();
         }
 
         public override void UnloadContent()
         {
             base.UnloadContent();
             player.UnloadContent();
-            
+            enemy.UnloadContent();
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
             player.Update(gameTime, this.map.tiles);
+            enemy.Update(gameTime, map.tiles);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             map.Draw(spriteBatch);
             player.Draw(spriteBatch);
+            enemy.Draw(spriteBatch);
             base.Draw(spriteBatch);    
         }
     }

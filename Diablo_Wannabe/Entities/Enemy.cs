@@ -14,105 +14,211 @@ namespace Diablo_Wannabe.Entities
     public class Enemy : Unit
     {
         public Vector2 Velocity;
-        public bool IsActive;
-        public SpriteSheet EnemySprite;
+        public SpriteSheet[] sprites;
+        public bool isMoving;
+        public bool isHitting;
+        public bool isCasting;
+        public TimeSpan chrono;
 
         public Enemy()
         {
-            this.IsActive = false;
-            this.Position = new Vector2(720, 400);
-            this.EnemySprite = new SpriteSheet(5, 1, this.Position, "Entities/spritesheet");
-            EnemySprite.LoadContent(ScreenManager.Manager.Content);
-            this.MovementSpeed = 3;
-            this.Velocity = Vector2.Zero;
-
-        }
-
-        public override void LoadContent()
-        {
-        }
-
-        public override void UnloadContent()
-        {
-            base.UnloadContent();
+            this.Initialize();
         }
 
         public override void Move(GameTime gameTime, List<Tile> tiles)
         {
-            Vector2 direction = ScreenManager.Manager.GameScreen.player.Position - this.Position;
-            float distance = CalculateDistance(ScreenManager.Manager.GameScreen.player.Position, this.Position);
-            if (distance >= 30)
+            if (this.Position.Y <= ScreenManager.Manager.GameScreen.player.Position.Y)
             {
-                this.EnemySprite.RotationAngle = (float)((Math.PI * 0.5f) + Math.Atan2(ScreenManager.Manager.GameScreen.player.Position.Y - this.Position.Y, ScreenManager.Manager.GameScreen.player.Position.X - this.Position.X));
+                this.MoveDown(gameTime);
+            }
+            if (this.Position.Y > ScreenManager.Manager.GameScreen.player.Position.Y)
+            {
+                this.MoveUp(gameTime);
+            }
+
+            if (Math.Abs(this.Position.Y - ScreenManager.Manager.GameScreen.player.Position.Y) < 2)
+            {
+                if (this.Position.X <= ScreenManager.Manager.GameScreen.player.Position.X)
+                {
+                    this.MoveRight(gameTime);
+                }
+                else if (this.Position.X > ScreenManager.Manager.GameScreen.player.Position.X)
+                {
+                    this.MoveLeft(gameTime);
+                }
+            }
+        }
+
+        private void PlayCastAnimation(GameTime gameTime)
+        {
+            if (!isCasting)
+            {
+                this.chrono = gameTime.TotalGameTime;
+                this.sprites[2].Position = this.Position;
+                this.sprites[2].CurrentFrame.Y = this.sprites[0].CurrentFrame.Y;
+                this.sprites[2].CurrentFrame.X = 0;
+            }
+            this.isCasting = true;
+            if (gameTime.TotalGameTime.TotalMilliseconds - chrono.TotalMilliseconds < 1000)
+            {
+                this.sprites[2].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
+                if (this.sprites[2].CurrentFrame.X > 7)
+                {
+                    this.sprites[2].CurrentFrame.X = 0;
+                }
             }
             else
             {
-                this.EnemySprite.CurrentFrame.X = 0;
+                isCasting = false;
             }
+        }
 
-            if (IsActive)
+        private void PlayHitAnimation(GameTime gameTime)
+        {
+            if (!isHitting)
             {
-                this.Velocity = Vector2.Zero;
-
-                if (direction != Vector2.Zero)
-                {
-                    direction.Normalize();
-                }
-
-                this.EnemySprite.CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
-                if (this.EnemySprite.CurrentFrame.X > 5 || this.EnemySprite.CurrentFrame.X == 0)
-                {
-                    this.EnemySprite.CurrentFrame.X = 1;
-                }
-
-                if (distance < this.MovementSpeed)
-                {
-                    this.Velocity += direction * distance;
-                }
-                else
-                {
-                    this.Velocity += direction * this.MovementSpeed;
-                }
-
-                Debug.WriteLine("E" + this.Position.X + " " + this.Position.Y);
-
-                if (CheckForCollision(tiles))
-                {
-                    if (Math.Abs((this.Position.X + this.Velocity.X) - ScreenManager.Manager.GameScreen.player.Position.X) > 20 
-                        && Math.Abs((this.Position.Y + this.Velocity.Y) - ScreenManager.Manager.GameScreen.player.Position.Y) > 20)
-                    {
-                        this.Position += this.Velocity;
-                        this.EnemySprite.Position = this.Position;
-                    }
-                    
-                }
-                else
-                {
-                    Debug.WriteLine("I az se blusnah");
-                }
-
+                this.chrono = gameTime.TotalGameTime;
+                this.sprites[1].Position = this.Position;
+                this.sprites[1].CurrentFrame.Y = this.sprites[0].CurrentFrame.Y;
+                this.sprites[1].CurrentFrame.X = 0;
             }
+            this.isHitting = true;
+            if (gameTime.TotalGameTime.TotalMilliseconds - chrono.TotalMilliseconds < 800)
+            {
+                this.sprites[1].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
+                if (this.sprites[1].CurrentFrame.X > 6)
+                {
+                    this.sprites[1].CurrentFrame.X = 0;
+                }
+            }
+            else
+            {
+                isHitting = false;
+            }
+        }
+
+        private void MoveUp(GameTime gameTime)
+        {
+            this.Position.Y -= this.MovementSpeed;
+            this.sprites[0].Position = this.Position;
+            this.isHitting = false;
+            this.isCasting = false;
+            this.sprites[0].CurrentFrame.Y = 0;
+            this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
+            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            {
+                this.sprites[0].CurrentFrame.X = 1;
+            }
+        }
+
+        private void MoveDown(GameTime gameTime)
+        {
+            this.Position.Y += this.MovementSpeed;
+            this.sprites[0].Position = this.Position;
+            this.isHitting = false;
+            this.isCasting = false;
+            this.sprites[0].CurrentFrame.Y = 2;
+            this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
+            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            {
+                this.sprites[0].CurrentFrame.X = 1;
+            }
+        }
+
+        private void MoveLeft(GameTime gameTime)
+        {
+            this.Position.X -= this.MovementSpeed;
+            this.sprites[0].Position = this.Position;
+            this.isHitting = false;
+            this.isCasting = false;
+            this.sprites[0].CurrentFrame.Y = 1;
+            this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
+            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            {
+                this.sprites[0].CurrentFrame.X = 1;
+            }
+        }
+
+        private void MoveRight(GameTime gameTime)
+        {
+            this.Position.X += this.MovementSpeed;
+            this.sprites[0].Position = this.Position;
+            this.isHitting = false;
+            this.isCasting = false;
+            this.sprites[0].CurrentFrame.Y = 3;
+            this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
+            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            {
+                this.sprites[0].CurrentFrame.X = 1;
+            }
+        }
+
+        public void Initialize()
+        {
+            this.Position = new Vector2(700, 500);
+            this.Velocity = Vector2.Zero;
+            this.sprites = new SpriteSheet[3];
+            this.sprites[0] = new SpriteSheet(9, 4, this.Position, "Entities/orc-mace-walking");
+            this.sprites[1] = new SpriteSheet(8, 4, this.Position, "Entities/orc-mace-hitting");
+            this.sprites[2] = new SpriteSheet(6, 1, this.Position, "Entities/orc-mace-death");
+            this.LoadContent();
+            this.MovementSpeed = 2;
+            this.chrono = new TimeSpan();
+        }
+
+        public override void LoadContent()
+        {
+            foreach (var sprite in sprites)
+            {
+                sprite.LoadContent(ScreenManager.Manager.Content);
+            }
+        }
+
+        public override void UnloadContent()
+        {
         }
 
         public override void Update(GameTime gameTime, List<Tile> tiles)
         {
-            if (Math.Abs(ScreenManager.Manager.GameScreen.player.Position.X - this.Position.X) <= 150
-                && Math.Abs(ScreenManager.Manager.GameScreen.player.Position.X - this.Position.X) <= 150)
+            if (CalculateDistance(this.Position, ScreenManager.Manager.GameScreen.player.Position) < 150)
             {
-                this.IsActive = true;
-                this.Move(gameTime, tiles);
-                this.EnemySprite.Update(gameTime, IsActive);
+                if (CalculateDistance(this.Position, ScreenManager.Manager.GameScreen.player.Position) > 30)
+                {
+                    this.Move(gameTime, tiles);
+                }
+                else
+                {
+                    PlayHitAnimation(gameTime);
+                }
+            }
+            if (isHitting)
+            {
+                sprites[1].Update(gameTime);
+            }
+            else if (isCasting)
+            {
+                sprites[2].Update(gameTime);
             }
             else
             {
-                this.IsActive = false;
-                this.EnemySprite.CurrentFrame.X = 0;
+                sprites[0].Update(gameTime);
             }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            EnemySprite.Draw(spriteBatch);
+            if (isHitting)
+            {
+                sprites[1].Draw(spriteBatch);
+            }
+            else if (isCasting)
+            {
+                sprites[2].Draw(spriteBatch);
+            }
+            else
+            {
+                sprites[0].Draw(spriteBatch);
+            }
         }
 
         private float CalculateDistance(Vector2 A, Vector2 B)
@@ -127,14 +233,6 @@ namespace Diablo_Wannabe.Entities
             distance = (float)Math.Sqrt(Math.Pow(xDiff, 2) + Math.Pow(yDiff, 2));
 
             return Math.Abs(distance);
-        }
-
-        private bool CheckForCollision(List<Tile> tiles)
-        {
-            return tiles.First(t => t.TileSprite.Position.X <= this.Position.X + 30 + this.Velocity.X
-                       && t.TileSprite.Position.Y <= this.Position.Y + 30 + this.Velocity.Y
-                       && t.TileSprite.Position.X + 65 > this.Position.X + 30 + this.Velocity.X
-                       && t.TileSprite.Position.Y + 65 > this.Position.Y + 30 + this.Velocity.Y).isPassable;
         }
     }
 }

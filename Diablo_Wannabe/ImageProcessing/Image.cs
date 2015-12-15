@@ -15,13 +15,11 @@ namespace Diablo_Wannabe.ImageProcessing
         private RenderTarget2D renderTarget;
         private Vector2 origin;
         private SpriteFont spriteFont;
-        private Dictionary<string, ImageEffect> allEffects;
 
         public float Alpha;
         public string Text, FontName;
         public string Effect;
         public bool IsActive;
-        public FadeEffect FadeEffect;
 
         public string Path;
 
@@ -43,7 +41,6 @@ namespace Diablo_Wannabe.ImageProcessing
             this.Scale = Vector2.One;
             this.SourceRect = Rectangle.Empty;
             this.Alpha = 1.0f;
-            this.allEffects = new Dictionary<string, ImageEffect>();
         }
 
         public void LoadContent()
@@ -93,32 +90,15 @@ namespace Diablo_Wannabe.ImageProcessing
             Texture = renderTarget;
 
             ScreenManager.Manager.GraphicsDevice.SetRenderTarget(null);
-            //SetEffect<FadeEffect>(ref FadeEffect);
-            //if (Effect != string.Empty)
-            //{
-            //    string[] split = Effect.Split(':');
-            //    foreach (var item in split)
-            //    {
-            //        ActivateEffect(item);
-            //    }
-            //}
         }
 
         public void UnloadContent()
         {
             content.Unload();
-            foreach (var effect in allEffects)
-            {
-                effect.Value.UnloadContent();
-            }
         }
 
         public virtual void Update(GameTime gameTime)
         {
-            foreach (var effect in allEffects)
-            {
-                effect.Value.Update(gameTime);
-            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -136,42 +116,3 @@ namespace Diablo_Wannabe.ImageProcessing
         }
     }
 }
-
-//private void SetEffect<T>(ref T effect)
-//{
-//    if (effect == null)
-//    {
-//        effect = (T)Activator.CreateInstance(typeof(T));
-//    }
-//    else
-//    {
-//        (effect as ImageEffect).IsActive = true;
-//        var obj = this;
-//        (effect as ImageEffect).LoadContent(ref obj);
-//    }
-
-//    allEffects.Add(effect.GetType().ToString().Replace("Diablo_Wannabe.", ""), (effect as ImageEffect));
-//}
-
-//public void ActivateEffect(string effect)
-//{
-//    if (!allEffects.ContainsKey(effect))
-//    {
-//        return;
-//    }
-
-//    allEffects[effect].IsActive = true;
-//    var obj = this;
-//    allEffects[effect].LoadContent(ref obj);
-//}
-
-//public void StopEffect(string effect)
-//{
-//    if (!allEffects.ContainsKey(effect))
-//    {
-//        return;
-//    }
-
-//    allEffects[effect].IsActive = false;
-//    allEffects[effect].UnloadContent();
-//}

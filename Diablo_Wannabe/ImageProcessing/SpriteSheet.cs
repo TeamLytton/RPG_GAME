@@ -39,7 +39,7 @@ namespace Diablo_Wannabe.ImageProcessing
             this.SourceRect = new Rectangle((int)this.FrameDimensions.X * (int)CurrentFrame.X, (int)this.FrameDimensions.Y * (int)this.CurrentFrame.Y, (int)this.FrameDimensions.X, (int)this.FrameDimensions.Y);
         }
 
-        public void Update(GameTime gameTime, bool isActive)
+        public void Update(GameTime gameTime)
         {
             this.SourceRect = new Rectangle((int)this.FrameDimensions.X * (int)CurrentFrame.X, (int)this.FrameDimensions.Y * (int)this.CurrentFrame.Y, (int)this.FrameDimensions.X, (int)this.FrameDimensions.Y);
         }

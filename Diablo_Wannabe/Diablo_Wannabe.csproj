@@ -55,7 +55,6 @@
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\Screen.cs" />
     <Compile Include="Screens\ScreenManager.cs" />
-    <Compile Include="XmlSerialization\XmlSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -66,11 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
-    <Content Include="LoadXml\GameScreen.xml" />
-    <Content Include="LoadXml\MenuScreen.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="LoadXml\Player.xml" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

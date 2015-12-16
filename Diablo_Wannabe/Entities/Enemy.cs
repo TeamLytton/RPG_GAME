@@ -53,7 +53,7 @@ namespace Diablo_Wannabe.Entities
         public void TakeDamage(int damage, GameTime gameTime)
         {
             this.health -= damage;
-            if (this.health <= 0)
+            if (this.health <= 0 && isAlive)
             {
                 this.Die(gameTime);
             }
@@ -73,7 +73,8 @@ namespace Diablo_Wannabe.Entities
         private void PlayDeathAnimation(GameTime gameTime)
         {
             if ((gameTime.TotalGameTime.Milliseconds - this.chrono.Milliseconds > 80 && this.sprites[2].CurrentFrame.X < 6)
-                || (int)this.sprites[2].CurrentFrame.X == 0)
+                || (int)this.sprites[2].CurrentFrame.X == 0
+                || (int)this.sprites[2].CurrentFrame.X == 1)
             {
                 this.chrono = gameTime.TotalGameTime;
                 this.sprites[2].CurrentFrame.X++;

@@ -1,5 +1,4 @@
 ﻿
-using Diablo_Wannabe.XmlSerialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,7 +10,6 @@ namespace Diablo_Wannabe.Screens
         private static ScreenManager manager;
         public Vector2 Dimensions { get; private set; }
         public ContentManager Content { get; private set; }
-        private XmlSerializer<Screen> xmlSerializator;
 
         public GraphicsDevice GraphicsDevice;
         public SpriteBatch SpriteBatch;
@@ -25,9 +23,6 @@ namespace Diablo_Wannabe.Screens
             this.Dimensions = new Vector2(800, 600);
             CurrentScreen = new MenuScreen();
             GameScreen = new GameScreen();
-            //this.xmlSerializator = new XmlSerializer<Screen>();
-            //xmlSerializator.Type = CurrentScreen.Type;
-            //CurrentScreen = xmlSerializator.Load("../../../LoadXml/MenuScreen.xml");
 
         }
 

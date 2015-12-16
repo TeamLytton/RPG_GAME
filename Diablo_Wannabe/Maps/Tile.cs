@@ -5,7 +5,7 @@ using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Diablo_Wannabe.Map
+namespace Diablo_Wannabe.Maps
 {
     public class Tile
     {

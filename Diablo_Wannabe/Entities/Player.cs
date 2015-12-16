@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Diablo_Wannabe.ImageProcessing;
-using Diablo_Wannabe.Map;
+using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,13 +20,14 @@ namespace Diablo_Wannabe.Entities
         public bool isHitting;
         public bool isCasting;
         public TimeSpan chrono;
+        public int weaponRange;
 
         public Player()
         { 
             this.Initialize();      
         }
 
-        public override void Move(GameTime gameTime, List<Tile> tiles)
+        public override void Move(GameTime gameTime)
         {
             if (!Input.Manager.KeyDown(Keys.Left, Keys.Right))
             {
@@ -98,9 +99,9 @@ namespace Diablo_Wannabe.Entities
                 this.sprites[1].CurrentFrame.X = 0;
             }
             this.isHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - chrono.TotalMilliseconds < 800)
+            if (gameTime.TotalGameTime.TotalMilliseconds - chrono.TotalMilliseconds < 500)
             {
-                this.sprites[1].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
+                this.sprites[1].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.06f;
                 if (this.sprites[1].CurrentFrame.X > 6)
                 {
                     this.sprites[1].CurrentFrame.X = 0;
@@ -109,6 +110,62 @@ namespace Diablo_Wannabe.Entities
             else
             {
                 isHitting = false;
+            }
+        }
+
+        private void CheckForEnemyHit(GameTime gameTime)
+        {
+            if ((int)this.sprites[1].CurrentFrame.Y == 0)
+            {
+                Map.Enemies.ForEach(e =>
+                {
+                    if (Math.Abs(this.Position.X - e.Position.X) < 40
+                        && this.Position.Y > e.Position.Y
+                        && this.Position.Y - weaponRange < e.Position.Y
+                        && (int)this.sprites[1].CurrentFrame.X == 5)
+                    {
+                        e.TakeDamage(20, gameTime);
+                    }
+                });
+            }
+            else if ((int)this.sprites[1].CurrentFrame.Y == 1)
+            {
+                Map.Enemies.ForEach(e =>
+                {
+                    if (Math.Abs(this.Position.Y - e.Position.Y) < 40
+                        && this.Position.X > e.Position.X
+                        && this.Position.X - weaponRange < e.Position.X
+                        && (int)this.sprites[1].CurrentFrame.X == 5)
+                    {
+                        e.TakeDamage(20, gameTime);
+                    }
+                });
+            }
+            else if ((int)this.sprites[1].CurrentFrame.Y == 2)
+            {
+                Map.Enemies.ForEach(e =>
+                {
+                    if (Math.Abs(this.Position.X - e.Position.X) < 40
+                        && this.Position.Y < e.Position.Y 
+                        && this.Position.Y + weaponRange > e.Position.Y 
+                        && (int)this.sprites[1].CurrentFrame.X == 5)
+                    {
+                        e.TakeDamage(20, gameTime);
+                    }
+                });
+            }
+            else if ((int)this.sprites[1].CurrentFrame.Y == 3)
+            {
+                Map.Enemies.ForEach(e =>
+                {
+                    if (Math.Abs(this.Position.Y - e.Position.Y) < 40
+                        && this.Position.X < e.Position.X
+                        && this.Position.X + weaponRange > e.Position.X
+                        && (int)this.sprites[1].CurrentFrame.X == 5)
+                    {
+                        e.TakeDamage(20, gameTime);
+                    }
+                });
             }
         }
 
@@ -141,7 +198,7 @@ namespace Diablo_Wannabe.Entities
         }
 
         private void MoveLeft(GameTime gameTime)
-        {
+        { 
             this.Position.X -= this.MovementSpeed;
             this.sprites[0].Position = this.Position;
             this.isHitting = false;
@@ -170,7 +227,7 @@ namespace Diablo_Wannabe.Entities
 
         public void Initialize()
         {
-            this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y);
+            this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y - 20);
             this.Velocity = Vector2.Zero;
             this.sprites = new SpriteSheet[3];
             this.sprites[0] = new SpriteSheet(9, 4, this.Position, "Entities/player-knight-walk");
@@ -178,6 +235,7 @@ namespace Diablo_Wannabe.Entities
             this.sprites[2] = new SpriteSheet(7, 4, this.Position, "Entities/player-knight-spellcast");
             this.LoadContent();
             this.MovementSpeed = 3;
+            this.weaponRange = 70;
             this.chrono = new TimeSpan();
         }
 
@@ -193,12 +251,13 @@ namespace Diablo_Wannabe.Entities
         {
         }
 
-        public override void Update(GameTime gameTime, List<Tile> tiles)
+        public override void Update(GameTime gameTime)
         {
-            this.Move(gameTime, tiles);
+            this.Move(gameTime);
             if (isHitting)
             {
                 sprites[1].Update(gameTime);
+                CheckForEnemyHit(gameTime);
             }
             else if (isCasting)
             {
@@ -209,6 +268,8 @@ namespace Diablo_Wannabe.Entities
                 sprites[0].Update(gameTime);
             }
         }
+
+     
 
         public override void Draw(SpriteBatch spriteBatch)
         {

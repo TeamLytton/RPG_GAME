@@ -1,18 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
+using Diablo_Wannabe.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Diablo_Wannabe.Map
+namespace Diablo_Wannabe.Maps
 {
-    public class Map
+    public static class Map
     {
-        public List<Tile> tiles;
-        private int posX;
-        private int posY;
+        public static List<Tile> tiles;
+        private static int posX;
+        private static int posY;
+        public static Player Player;
+        public static List<Enemy> Enemies;
 
-        public void FillMap()
+        public static void Initialize()
+        {
+            FillMap();
+            Player = new Player();
+            Player.LoadContent();
+            Enemies = new List<Enemy>(); 
+            Enemies.Add(new Enemy());
+            foreach (var enemy in Enemies)
+            {
+                enemy.LoadContent();
+            }
+        }
+
+        public static void FillMap()
         {
             tiles = new List<Tile>();
             posX = 0;
@@ -54,12 +69,18 @@ namespace Diablo_Wannabe.Map
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public static void Draw(SpriteBatch spriteBatch)
         {
             foreach (var tile in tiles)
             {
                 tile.Draw(spriteBatch);
+
             }
+            foreach (var enemy in Enemies)
+            {
+                enemy.Draw(spriteBatch);
+            }
+            Player.Draw(spriteBatch);
         }
     }
 }

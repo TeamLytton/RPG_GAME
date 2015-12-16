@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Diablo_Wannabe.ImageProcessing;
-using Diablo_Wannabe.Map;
+using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,7 +17,8 @@ namespace Diablo_Wannabe.Entities
         public SpriteSheet[] sprites;
         public bool isMoving;
         public bool isHitting;
-        public bool isCasting;
+        public bool isAlive;
+        public int health;
         public TimeSpan chrono;
 
         public Enemy()
@@ -25,51 +26,57 @@ namespace Diablo_Wannabe.Entities
             this.Initialize();
         }
 
-        public override void Move(GameTime gameTime, List<Tile> tiles)
+        public override void Move(GameTime gameTime)
         {
-            if (this.Position.Y <= ScreenManager.Manager.GameScreen.player.Position.Y)
-            {
-                this.MoveDown(gameTime);
-            }
-            if (this.Position.Y > ScreenManager.Manager.GameScreen.player.Position.Y)
-            {
-                this.MoveUp(gameTime);
-            }
+                if (this.Position.Y <= Map.Player.Position.Y)
+                {
+                    this.MoveDown(gameTime);
+                }
+                if (this.Position.Y > Map.Player.Position.Y)
+                {
+                    this.MoveUp(gameTime);
+                }
 
-            if (Math.Abs(this.Position.Y - ScreenManager.Manager.GameScreen.player.Position.Y) < 2)
+                if (Math.Abs(this.Position.Y - Map.Player.Position.Y) < 2)
+                {
+                    if (this.Position.X <= Map.Player.Position.X)
+                    {
+                        this.MoveRight(gameTime);
+                    }
+                    else if (this.Position.X > Map.Player.Position.X)
+                    {
+                        this.MoveLeft(gameTime);
+                    }
+                }
+        }
+
+        public void TakeDamage(int damage, GameTime gameTime)
+        {
+            this.health -= damage;
+            if (this.health <= 0)
             {
-                if (this.Position.X <= ScreenManager.Manager.GameScreen.player.Position.X)
-                {
-                    this.MoveRight(gameTime);
-                }
-                else if (this.Position.X > ScreenManager.Manager.GameScreen.player.Position.X)
-                {
-                    this.MoveLeft(gameTime);
-                }
+                this.Die(gameTime);
             }
         }
 
-        private void PlayCastAnimation(GameTime gameTime)
+        private void Die(GameTime gameTime)
         {
-            if (!isCasting)
+            this.isAlive = false;
+            this.isHitting = false;
+            this.isMoving = false;
+            this.sprites[2].CurrentFrame.Y = 0;
+            this.sprites[2].CurrentFrame.X = 0;
+            this.sprites[2].Position = this.Position;
+            this.chrono = gameTime.TotalGameTime;
+        }
+
+        private void PlayDeathAnimation(GameTime gameTime)
+        {
+            if ((gameTime.TotalGameTime.Milliseconds - this.chrono.Milliseconds > 80 && this.sprites[2].CurrentFrame.X < 6)
+                || (int)this.sprites[2].CurrentFrame.X == 0)
             {
                 this.chrono = gameTime.TotalGameTime;
-                this.sprites[2].Position = this.Position;
-                this.sprites[2].CurrentFrame.Y = this.sprites[0].CurrentFrame.Y;
-                this.sprites[2].CurrentFrame.X = 0;
-            }
-            this.isCasting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - chrono.TotalMilliseconds < 1000)
-            {
-                this.sprites[2].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
-                if (this.sprites[2].CurrentFrame.X > 7)
-                {
-                    this.sprites[2].CurrentFrame.X = 0;
-                }
-            }
-            else
-            {
-                isCasting = false;
+                this.sprites[2].CurrentFrame.X++;
             }
         }
 
@@ -102,7 +109,6 @@ namespace Diablo_Wannabe.Entities
             this.Position.Y -= this.MovementSpeed;
             this.sprites[0].Position = this.Position;
             this.isHitting = false;
-            this.isCasting = false;
             this.sprites[0].CurrentFrame.Y = 0;
             this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
             if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
@@ -116,7 +122,6 @@ namespace Diablo_Wannabe.Entities
             this.Position.Y += this.MovementSpeed;
             this.sprites[0].Position = this.Position;
             this.isHitting = false;
-            this.isCasting = false;
             this.sprites[0].CurrentFrame.Y = 2;
             this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
             if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
@@ -130,7 +135,6 @@ namespace Diablo_Wannabe.Entities
             this.Position.X -= this.MovementSpeed;
             this.sprites[0].Position = this.Position;
             this.isHitting = false;
-            this.isCasting = false;
             this.sprites[0].CurrentFrame.Y = 1;
             this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
             if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
@@ -144,7 +148,6 @@ namespace Diablo_Wannabe.Entities
             this.Position.X += this.MovementSpeed;
             this.sprites[0].Position = this.Position;
             this.isHitting = false;
-            this.isCasting = false;
             this.sprites[0].CurrentFrame.Y = 3;
             this.sprites[0].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
             if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
@@ -164,6 +167,8 @@ namespace Diablo_Wannabe.Entities
             this.LoadContent();
             this.MovementSpeed = 2;
             this.chrono = new TimeSpan();
+            this.health = 100;
+            this.isAlive = true;
         }
 
         public override void LoadContent()
@@ -178,13 +183,20 @@ namespace Diablo_Wannabe.Entities
         {
         }
 
-        public override void Update(GameTime gameTime, List<Tile> tiles)
+        public override void Update(GameTime gameTime)
         {
-            if (CalculateDistance(this.Position, ScreenManager.Manager.GameScreen.player.Position) < 150)
+            if (!isAlive)
             {
-                if (CalculateDistance(this.Position, ScreenManager.Manager.GameScreen.player.Position) > 30)
+                PlayDeathAnimation(gameTime);
+                sprites[2].Update(gameTime);
+                return;
+            }
+
+            if (CalculateDistance(this.Position, Map.Player.Position) < 150)
+            {
+                if (CalculateDistance(this.Position, Map.Player.Position) > 30)
                 {
-                    this.Move(gameTime, tiles);
+                    this.Move(gameTime);
                 }
                 else
                 {
@@ -194,10 +206,6 @@ namespace Diablo_Wannabe.Entities
             if (isHitting)
             {
                 sprites[1].Update(gameTime);
-            }
-            else if (isCasting)
-            {
-                sprites[2].Update(gameTime);
             }
             else
             {
@@ -211,7 +219,7 @@ namespace Diablo_Wannabe.Entities
             {
                 sprites[1].Draw(spriteBatch);
             }
-            else if (isCasting)
+            else if (!isAlive)
             {
                 sprites[2].Draw(spriteBatch);
             }

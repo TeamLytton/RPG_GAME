@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
 using Diablo_Wannabe.Entities;
 using Microsoft.Xna.Framework;
@@ -37,29 +38,72 @@ namespace Diablo_Wannabe.Maps
                 string line = reader.ReadLine();
                 while (line != null)
                 {
-                    foreach (char t in line)
+                    foreach (var s in line.Split(' '))
                     {
-                        switch (t)
+                        switch (s)
                         {
-                            case 'G':
-                                tiles.Add(new Tile(0, 2, new Vector2(posX, posY), true, "tileset"));
+                            case "G":
+                                tiles.Add(new Tile(0, 3, new Vector2(posX, posY), true, "tileset"));
                                 tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
-                                posX += 64;
+                                posX += 32;
                                 break;
-                            case 'R':
-                                tiles.Add(new Tile(0, 0, new Vector2(posX, posY), false, "tileset"));
+                            case "GS":
+                                tiles.Add(new Tile(2, 3, new Vector2(posX, posY), true, "tileset"));
                                 tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
-
-                                posX += 64;
+                                posX += 32;
                                 break;
-                            case 'S':
-                                tiles.Add(new Tile(0, 1, new Vector2(posX, posY), true,"tileset"));
+                            case "W":
+                                tiles.Add(new Tile(3, 2, new Vector2(posX, posY), false, "tileset"));
                                 tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
-
-                                posX += 64;
+                                posX += 32;
                                 break;
-                            case 'n':
-                                posY += 64;
+                            case "WD":
+                                tiles.Add(new Tile(0, 2, new Vector2(posX, posY), false, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "RD":
+                                tiles.Add(new Tile(2, 1, new Vector2(posX, posY), false, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "R":
+                                tiles.Add(new Tile(2, 0, new Vector2(posX, posY), false, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "S":
+                                tiles.Add(new Tile(1, 3, new Vector2(posX, posY), true,"tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "SS":
+                                tiles.Add(new Tile(3, 3, new Vector2(posX, posY), true, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "TS":
+                                tiles.Add(new Tile(6, 1, new Vector2(posX, posY), true, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "TG":
+                                tiles.Add(new Tile(5, 1, new Vector2(posX, posY), false, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "WL":
+                                tiles.Add(new Tile(5, 0, new Vector2(posX, posY), false, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "WO":
+                                tiles.Add(new Tile(4, 1, new Vector2(posX, posY), true, "tileset"));
+                                tiles[tiles.Count - 1].TileSprite.Position = new Vector2(posX, posY);
+                                posX += 32;
+                                break;
+                            case "n":
+                                posY += 32;
                                 posX = 0;
                                 break;
                         }

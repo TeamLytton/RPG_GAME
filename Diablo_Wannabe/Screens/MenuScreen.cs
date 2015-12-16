@@ -105,7 +105,8 @@ namespace Diablo_Wannabe.Screens
                 {
                     if (startNewGame)
                     {
-                        ScreenManager.Manager.CurrentScreen = ScreenManager.Manager.GameScreen;
+                        ScreenManager.Manager.CurrentScreen = new GameScreen();
+                        ScreenManager.Manager.CurrentScreen.LoadContent();
                         startNewGame = false;
                     }
                 }

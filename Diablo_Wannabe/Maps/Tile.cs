@@ -20,14 +20,14 @@ namespace Diablo_Wannabe.Maps
             this.TileFrameY = frameY;
             this.isPassable = isPassable;
 
-            TileSprite = new SpriteSheet(10, 5, position, path)
+            TileSprite = new SpriteSheet(8, 8, position, path)
             {
                 CurrentFrame =
                 {
                     X = TileFrameX,
                     Y = TileFrameY
                 }
-            };
+            };      
             TileSprite.LoadContent(ScreenManager.Manager.Content);
         }
 

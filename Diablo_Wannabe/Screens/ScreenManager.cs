@@ -16,14 +16,10 @@ namespace Diablo_Wannabe.Screens
 
         public Screen CurrentScreen;
 
-        public GameScreen GameScreen;
-
         private ScreenManager()
         {
             this.Dimensions = new Vector2(800, 600);
-            CurrentScreen = new MenuScreen();
-            GameScreen = new GameScreen();
-
+            CurrentScreen = new GameScreen();
         }
 
         public static ScreenManager Manager = manager ?? (manager = new ScreenManager());
@@ -32,7 +28,6 @@ namespace Diablo_Wannabe.Screens
         {
             this.Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             CurrentScreen.LoadContent();
-            GameScreen.LoadContent();
         }
 
         public void UnloadContent()

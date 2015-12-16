@@ -171,57 +171,69 @@ namespace Diablo_Wannabe.Entities
 
         private void MoveUp(GameTime gameTime)
         {
-            this.Position.Y -= this.MovementSpeed;
-            this.sprites[0].Position = this.Position;
-            this.isHitting = false;
-            this.isCasting = false;
-            this.sprites[0].CurrentFrame.Y = 0;
-            this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
-            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            if (this.CheckForCollision(0, (int) MovementSpeed*(-1)))
             {
-                this.sprites[0].CurrentFrame.X = 1;
+                this.Position.Y -= this.MovementSpeed;
+                this.sprites[0].Position = this.Position;
+                this.isHitting = false;
+                this.isCasting = false;
+                this.sprites[0].CurrentFrame.Y = 0;
+                this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
+                if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+                {
+                    this.sprites[0].CurrentFrame.X = 1;
+                }
             }
         }
 
         private void MoveDown(GameTime gameTime)
         {
-            this.Position.Y += this.MovementSpeed;
-            this.sprites[0].Position = this.Position;
-            this.isHitting = false;
-            this.isCasting = false;
-            this.sprites[0].CurrentFrame.Y = 2;
-            this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
-            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            if (this.CheckForCollision(0, (int)this.MovementSpeed))
             {
-                this.sprites[0].CurrentFrame.X = 1;
+                this.Position.Y += this.MovementSpeed;
+                this.sprites[0].Position = this.Position;
+                this.isHitting = false;
+                this.isCasting = false;
+                this.sprites[0].CurrentFrame.Y = 2;
+                this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
+                if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+                {
+                    this.sprites[0].CurrentFrame.X = 1;
+                }
             }
         }
 
         private void MoveLeft(GameTime gameTime)
-        { 
-            this.Position.X -= this.MovementSpeed;
-            this.sprites[0].Position = this.Position;
-            this.isHitting = false;
-            this.isCasting = false;
-            this.sprites[0].CurrentFrame.Y = 1;
-            this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
-            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+        {
+            if (this.CheckForCollision((int)-this.MovementSpeed, 0))
             {
-                this.sprites[0].CurrentFrame.X = 1;
+                this.Position.X -= this.MovementSpeed;
+                this.sprites[0].Position = this.Position;
+                this.isHitting = false;
+                this.isCasting = false;
+                this.sprites[0].CurrentFrame.Y = 1;
+                this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
+                if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+                {
+                    this.sprites[0].CurrentFrame.X = 1;
+                }
             }
         }
 
         private void MoveRight(GameTime gameTime)
         {
-            this.Position.X += this.MovementSpeed;
-            this.sprites[0].Position = this.Position;
-            this.isHitting = false;
-            this.isCasting = false;
-            this.sprites[0].CurrentFrame.Y = 3;
-            this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
-            if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+            if (this.CheckForCollision((int)this.MovementSpeed, 0))
             {
-                this.sprites[0].CurrentFrame.X = 1;
+                this.Position.X += this.MovementSpeed;
+                this.sprites[0].Position = this.Position;
+                this.isHitting = false;
+                this.isCasting = false;
+                this.sprites[0].CurrentFrame.Y = 3;
+                this.sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
+                if (this.sprites[0].CurrentFrame.X > 9 || this.sprites[0].CurrentFrame.X == 0)
+                {
+                    this.sprites[0].CurrentFrame.X = 1;
+                }
             }
         }
 
@@ -301,12 +313,13 @@ namespace Diablo_Wannabe.Entities
             return Math.Abs(distance);
         }
 
-        private bool CheckForCollision(List<Tile>  tiles)
+        private bool CheckForCollision(int movementX, int movementY)
         {
-            return tiles.First(t=>t.TileSprite.Position.X <= this.Position.X + 30 + this.Velocity.X
-                       && t.TileSprite.Position.Y <= this.Position.Y + 30 + this.Velocity.Y
-                       && t.TileSprite.Position.X + 65 > this.Position.X + 30 + this.Velocity.X
-                       && t.TileSprite.Position.Y + 65 > this.Position.Y + 30 + this.Velocity.Y).isPassable;
+            return Map.tiles.Any(t => t.TileSprite.Position.X - 16 <= this.Position.X + movementX
+                       && t.TileSprite.Position.Y - 16 <= this.Position.Y + movementY
+                       && t.TileSprite.Position.X + 16 > this.Position.X + movementX
+                       && t.TileSprite.Position.Y + 16 > this.Position.Y + movementY
+                       && t.isPassable);
         }
     }
 }

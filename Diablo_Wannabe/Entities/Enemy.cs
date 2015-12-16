@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
@@ -30,22 +31,34 @@ namespace Diablo_Wannabe.Entities
         {
                 if (this.Position.Y <= Map.Player.Position.Y)
                 {
-                    this.MoveDown(gameTime);
+                    if (CheckForCollision(0, (int)this.MovementSpeed))
+                    {
+                        this.MoveDown(gameTime);
+                    }
                 }
                 if (this.Position.Y > Map.Player.Position.Y)
                 {
-                    this.MoveUp(gameTime);
+                    if (CheckForCollision(0, (int) -this.MovementSpeed))
+                    {
+                        this.MoveUp(gameTime);
+                    }
                 }
 
                 if (Math.Abs(this.Position.Y - Map.Player.Position.Y) < 2)
                 {
                     if (this.Position.X <= Map.Player.Position.X)
                     {
-                        this.MoveRight(gameTime);
+                        if (CheckForCollision((int)this.MovementSpeed, 0))
+                        {
+                            this.MoveRight(gameTime);
+                        }
                     }
                     else if (this.Position.X > Map.Player.Position.X)
                     {
-                        this.MoveLeft(gameTime);
+                        if (CheckForCollision((int)-this.MovementSpeed,0))
+                        {
+                            this.MoveLeft(gameTime);
+                        }
                     }
                 }
         }
@@ -242,6 +255,15 @@ namespace Diablo_Wannabe.Entities
             distance = (float)Math.Sqrt(Math.Pow(xDiff, 2) + Math.Pow(yDiff, 2));
 
             return Math.Abs(distance);
+        }
+
+        private bool CheckForCollision(int movementX, int movementY)
+        {
+            return Map.tiles.Any(t => t.TileSprite.Position.X - 16 <= this.Position.X + movementX
+                       && t.TileSprite.Position.Y - 16 <= this.Position.Y + movementY
+                       && t.TileSprite.Position.X + 16 > this.Position.X + movementX
+                       && t.TileSprite.Position.Y + 16 > this.Position.Y + movementY
+                       && t.isPassable);
         }
     }
 }

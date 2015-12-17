@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Linq;
+using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
@@ -12,6 +13,8 @@ namespace Diablo_Wannabe.Entities.Characters
 {
     public class Player : Unit
     {
+        public HealthBar HealthBar;
+
         public Player(string path, int movementSpeed, int weaponRange, int health, int armor, int damage)
         {
             this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y - 20);
@@ -23,10 +26,12 @@ namespace Diablo_Wannabe.Entities.Characters
             this.MovementSpeed = movementSpeed;
             this.WeaponRange = weaponRange;
             this.Health = health;
+            this.MaxHealth = health;
             this.Armor = armor;
             this.Damage = damage;
             this.LastAction = new TimeSpan();
             this.LastTimeDamageTaken = new TimeSpan();
+            this.HealthBar = new HealthBar(new Vector2(this.Position.X, this.Position.Y - 40));
             this.LoadContent();
         }
 
@@ -222,11 +227,11 @@ namespace Diablo_Wannabe.Entities.Characters
             this.Move(gameTime);
             if (IsHitting)
             {
-                Sprites[1].Update(gameTime);
+                Sprites[1].Update();
             }
             else
             {
-                Sprites[0].Update(gameTime);
+                Sprites[0].Update();
             }
         }
 
@@ -238,6 +243,8 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            this.HealthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
+
             if (IsHitting)
             {
                 Sprites[1].Draw(spriteBatch);

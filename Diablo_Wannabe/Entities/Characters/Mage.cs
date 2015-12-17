@@ -25,15 +25,15 @@ namespace Diablo_Wannabe.Entities.Characters
             this.Move(gameTime);
             if (IsHitting)
             {
-                Sprites[1].Update(gameTime);
+                Sprites[1].Update();
             }
             else if (IsCasting)
             {
-                Sprites[2].Update(gameTime);
+                Sprites[2].Update();
             }
             else
             {
-                Sprites[0].Update(gameTime);
+                Sprites[0].Update();
             }
         }
 

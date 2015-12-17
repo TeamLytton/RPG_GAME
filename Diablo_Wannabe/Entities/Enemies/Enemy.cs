@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
@@ -10,6 +11,7 @@ namespace Diablo_Wannabe.Entities.Enemies
 {
     public abstract class Enemy : Unit
     {
+        private HealthBar healthBar;
 
         protected Enemy(Vector2 position, string path, int movementSpeed, int health, int weaponRange, int armor, int damage)
         {
@@ -20,12 +22,14 @@ namespace Diablo_Wannabe.Entities.Enemies
             this.Sprites[2] = new SpriteSheet(6, 1, this.Position, path + "death");
             this.MovementSpeed = movementSpeed;
             this.Health = health;
+            this.MaxHealth = health;
             this.Armor = armor;
             this.Damage = damage;
             this.WeaponRange = weaponRange;
             this.IsAlive = true;
             this.LastAction = new TimeSpan();
             this.LastTimeDamageTaken = new TimeSpan();
+            this.healthBar = new HealthBar(this.Position);
             this.LoadContent();
         }
 
@@ -192,7 +196,7 @@ namespace Diablo_Wannabe.Entities.Enemies
             if (!IsAlive)
             {
                 PlayDeathAnimation(gameTime);
-                Sprites[2].Update(gameTime);
+                Sprites[2].Update();
                 return;
             }
 
@@ -209,16 +213,18 @@ namespace Diablo_Wannabe.Entities.Enemies
             }
             if (IsHitting)
             {
-                Sprites[1].Update(gameTime);
+                Sprites[1].Update();
             }
             else
             {
-                Sprites[0].Update(gameTime);
+                Sprites[0].Update();
             }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            this.healthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
+
             if (IsHitting)
             {
                 Sprites[1].Draw(spriteBatch);

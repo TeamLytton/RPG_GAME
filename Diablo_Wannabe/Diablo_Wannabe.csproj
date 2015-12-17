@@ -46,6 +46,7 @@
     <Compile Include="Entities\GameObject.cs" />
     <Compile Include="Entities\Enemies\OrcMace.cs" />
     <Compile Include="Entities\Characters\Player.cs" />
+    <Compile Include="Entities\StatsBars\HealthBar.cs" />
     <Compile Include="Entities\Unit.cs" />
     <Compile Include="ImageProcessing\Image.cs" />
     <Compile Include="ImageProcessing\SpriteSheet.cs" />

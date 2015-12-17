@@ -1,4 +1,5 @@
 ﻿
+using Diablo_Wannabe.Entities.StatsBars;
 using Microsoft.Xna.Framework;
 
 namespace Diablo_Wannabe.Entities.Enemies
@@ -7,7 +8,7 @@ namespace Diablo_Wannabe.Entities.Enemies
     {
         private const string DefaultPath = "Entities/orc-mace-";
         private const int DefaultMovementSpeed = 2;
-        private const int DefaultHealth = 70;
+        private const int DefaultHealth = 100;
         private const int DefaultWeaponRange = 45;
         private const int DefaultArmor = 20;
         private const int DefaultDamage = 15;

@@ -14,6 +14,7 @@ namespace Diablo_Wannabe.Entities
         public bool IsHitting;
         public bool IsAlive;
 
+        public int MaxHealth { get; set; }
         public int Health { get; set; }
         public int Armor { get; set; }
         public int Damage { get; set; }

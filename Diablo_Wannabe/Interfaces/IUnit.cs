@@ -3,6 +3,8 @@ namespace Diablo_Wannabe.Interfaces
 {
     public interface IUnit
     {
+        int MaxHealth { get; set; }
+
         int Health { get; set; }
 
         int Armor { get; set; }

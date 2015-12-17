@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Diablo_Wannabe.Entities;
-using Diablo_Wannabe.Characters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,10 +18,11 @@ namespace Diablo_Wannabe.Maps
         public static void Initialize()
         {
             FillMap();
-            Player = new Warrior();
+            Player = new Player();
             Player.LoadContent();
             Enemies = new List<Enemy>(); 
-            Enemies.Add(new Enemy());
+            Enemies.Add(new OrcMace(new Vector2(500,300)));
+            Enemies.Add(new OrcMace(new Vector2(650,200)));
             foreach (var enemy in Enemies)
             {
                 enemy.LoadContent();

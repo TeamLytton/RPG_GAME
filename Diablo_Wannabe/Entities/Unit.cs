@@ -1,18 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using System;
+using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Interfaces;
-using Diablo_Wannabe.Maps;
 using Microsoft.Xna.Framework;
 
 namespace Diablo_Wannabe.Entities
 {
     public abstract class Unit : GameObject, IMovable
     {
-        public bool IsActive;
         public float MovementSpeed;
-        public Vector2 Velocity;
 
-        public abstract void Move(GameTime gameTime );
-        public abstract void Update(GameTime gameTime );
+        public bool IsMoving;
+        public bool IsHitting;
+        public bool IsAlive;
+
+        public int Health;
+        public int Armor;
+        public int WeaponRange;
+        public int Damage;
+
+        public TimeSpan LastAction;
+        public TimeSpan LastTimeDamageTaken;
+
+        public SpriteSheet[] Sprites;
+
+        public virtual void Move(GameTime gameTime)
+        {
+        }
+
+
+        public virtual void Update(GameTime gameTime)
+        {
+        }
+
+
+        protected virtual void Die()
+        {
+        }
+
+        protected float CalculateDistance(Vector2 A, Vector2 B)
+        {
+            A = new Vector2(Math.Abs(A.X), Math.Abs(A.Y));
+            B = new Vector2(Math.Abs(B.X), Math.Abs(B.Y));
+
+            float xDiff, yDiff, distance;
+            xDiff = A.X - B.X;
+            yDiff = A.Y - B.Y;
+
+            distance = (float)Math.Sqrt(Math.Pow(xDiff, 2) + Math.Pow(yDiff, 2));
+
+            return Math.Abs(distance);
+        }
     }
 }

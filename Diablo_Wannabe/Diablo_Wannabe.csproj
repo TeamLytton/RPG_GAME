@@ -38,18 +38,15 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Characters\Archer.cs" />
-    <Compile Include="Characters\Mage.cs" />
-    <Compile Include="Characters\Warrior.cs" />
     <Compile Include="DiabloWannabe.cs" />
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\GameObject.cs" />
+    <Compile Include="Entities\OrcMace.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\Unit.cs" />
     <Compile Include="ImageProcessing\Image.cs" />
     <Compile Include="ImageProcessing\SpriteSheet.cs" />
     <Compile Include="Input.cs" />
-    <Compile Include="Interfaces\IHero.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Maps\Tile.cs" />

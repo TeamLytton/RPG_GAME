@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+﻿
 using Microsoft.Xna.Framework;
 
-namespace Diablo_Wannabe.Entities
+namespace Diablo_Wannabe.Entities.Enemies
 {
     public class OrcMace : Enemy
     {

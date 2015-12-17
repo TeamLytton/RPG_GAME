@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace Diablo_Wannabe.Entities
 {
-    public abstract class Unit : GameObject, IMovable
+    public abstract class Unit : GameObject, IMovable, IUnit
     {
         public float MovementSpeed;
 
@@ -14,10 +14,10 @@ namespace Diablo_Wannabe.Entities
         public bool IsHitting;
         public bool IsAlive;
 
-        public int Health;
-        public int Armor;
-        public int WeaponRange;
-        public int Damage;
+        public int Health { get; set; }
+        public int Armor { get; set; }
+        public int Damage { get; set; }
+        public int WeaponRange { get; set; }
 
         public TimeSpan LastAction;
         public TimeSpan LastTimeDamageTaken;

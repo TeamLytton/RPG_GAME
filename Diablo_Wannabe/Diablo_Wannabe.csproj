@@ -39,15 +39,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DiabloWannabe.cs" />
-    <Compile Include="Entities\Enemy.cs" />
+    <Compile Include="Entities\Characters\Archer.cs" />
+    <Compile Include="Entities\Characters\Knight.cs" />
+    <Compile Include="Entities\Characters\Mage.cs" />
+    <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\GameObject.cs" />
-    <Compile Include="Entities\OrcMace.cs" />
-    <Compile Include="Entities\Player.cs" />
+    <Compile Include="Entities\Enemies\OrcMace.cs" />
+    <Compile Include="Entities\Characters\Player.cs" />
     <Compile Include="Entities\Unit.cs" />
     <Compile Include="ImageProcessing\Image.cs" />
     <Compile Include="ImageProcessing\SpriteSheet.cs" />
     <Compile Include="Input.cs" />
+    <Compile Include="Interfaces\ICaster.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
+    <Compile Include="Interfaces\IShooter.cs" />
+    <Compile Include="Interfaces\IUnit.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Maps\Tile.cs" />
     <Compile Include="Program.cs" />

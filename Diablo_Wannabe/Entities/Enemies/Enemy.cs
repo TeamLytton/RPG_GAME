@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
-namespace Diablo_Wannabe.Entities
+namespace Diablo_Wannabe.Entities.Enemies
 {
     public abstract class Enemy : Unit
     {

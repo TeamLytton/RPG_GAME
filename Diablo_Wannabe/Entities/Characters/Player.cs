@@ -8,15 +8,26 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Diablo_Wannabe.Entities
+namespace Diablo_Wannabe.Entities.Characters
 {
     public class Player : Unit
     {
-        public bool IsCasting;
-
-        public Player()
-        { 
-            this.Initialize();      
+        public Player(string path, int movementSpeed, int weaponRange, int health, int armor, int damage)
+        {
+            this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y - 20);
+            this.Sprites = new SpriteSheet[4];
+            this.Sprites[0] = new SpriteSheet(9, 4, this.Position, path + "walk");
+            this.Sprites[1] = new SpriteSheet(8, 4, this.Position, path + "hitting");
+            this.Sprites[2] = new SpriteSheet(7, 4, this.Position, path + "spellcast");
+            this.Sprites[3] = new SpriteSheet(6, 1, this.Position, path + "death");
+            this.MovementSpeed = movementSpeed;
+            this.WeaponRange = weaponRange;
+            this.Health = health;
+            this.Armor = armor;
+            this.Damage = damage;
+            this.LastAction = new TimeSpan();
+            this.LastTimeDamageTaken = new TimeSpan();
+            this.LoadContent();
         }
 
         public override void Move(GameTime gameTime)
@@ -51,34 +62,7 @@ namespace Diablo_Wannabe.Entities
             {
                 PlayHitAnimation(gameTime);
             }
-            if (Input.Manager.KeyPressed(Keys.A) || IsCasting)
-            {
-                PlayCastAnimation(gameTime);
-            }
-        }
 
-        private void PlayCastAnimation(GameTime gameTime)
-        {
-            if (!IsCasting)
-            {
-                this.LastAction = gameTime.TotalGameTime;
-                this.Sprites[2].Position = this.Position;
-                this.Sprites[2].CurrentFrame.Y = this.Sprites[0].CurrentFrame.Y;
-                this.Sprites[2].CurrentFrame.X = 0;
-            }
-            this.IsCasting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds < 1000)
-            {
-                this.Sprites[2].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
-                if (this.Sprites[2].CurrentFrame.X > 7)
-                {
-                    this.Sprites[2].CurrentFrame.X = 0;
-                }
-            }
-            else
-            {
-                IsCasting = false;
-            }
         }
 
         private void PlayHitAnimation(GameTime gameTime)
@@ -167,8 +151,6 @@ namespace Diablo_Wannabe.Entities
             {
                 this.Position.Y -= this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.IsHitting = false;
-                this.IsCasting = false;
                 this.Sprites[0].CurrentFrame.Y = 0;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
@@ -184,8 +166,6 @@ namespace Diablo_Wannabe.Entities
             {
                 this.Position.Y += this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.IsHitting = false;
-                this.IsCasting = false;
                 this.Sprites[0].CurrentFrame.Y = 2;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
@@ -201,8 +181,6 @@ namespace Diablo_Wannabe.Entities
             {
                 this.Position.X -= this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.IsHitting = false;
-                this.IsCasting = false;
                 this.Sprites[0].CurrentFrame.Y = 1;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
@@ -218,8 +196,6 @@ namespace Diablo_Wannabe.Entities
             {
                 this.Position.X += this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.IsHitting = false;
-                this.IsCasting = false;
                 this.Sprites[0].CurrentFrame.Y = 3;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
@@ -227,23 +203,6 @@ namespace Diablo_Wannabe.Entities
                     this.Sprites[0].CurrentFrame.X = 1;
                 }
             }
-        }
-
-        public void Initialize()
-        {
-            this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y - 20);
-            this.Sprites = new SpriteSheet[3];
-            this.Sprites[0] = new SpriteSheet(9, 4, this.Position, "Entities/player-knight-walk");
-            this.Sprites[1] = new SpriteSheet(8, 4, this.Position, "Entities/player-knight-hitting");
-            this.Sprites[2] = new SpriteSheet(7, 4, this.Position, "Entities/player-knight-spellcast");
-            this.MovementSpeed = 3;
-            this.WeaponRange = 70;
-            this.Health = 100;
-            this.Armor = 40;
-            this.Damage = 50;
-            this.LastAction = new TimeSpan();
-            this.LastTimeDamageTaken = new TimeSpan();
-            this.LoadContent();          
         }
 
         public override void LoadContent()
@@ -265,10 +224,6 @@ namespace Diablo_Wannabe.Entities
             {
                 Sprites[1].Update(gameTime);
             }
-            else if (IsCasting)
-            {
-                Sprites[2].Update(gameTime);
-            }
             else
             {
                 Sprites[0].Update(gameTime);
@@ -286,10 +241,6 @@ namespace Diablo_Wannabe.Entities
             if (IsHitting)
             {
                 Sprites[1].Draw(spriteBatch);
-            }
-            else if (IsCasting)
-            {
-                Sprites[2].Draw(spriteBatch);
             }
             else
             {

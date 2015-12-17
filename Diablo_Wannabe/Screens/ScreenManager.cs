@@ -19,7 +19,7 @@ namespace Diablo_Wannabe.Screens
         private ScreenManager()
         {
             this.Dimensions = new Vector2(800, 600);
-            CurrentScreen = new GameScreen();
+            CurrentScreen = new MenuScreen();
         }
 
         public static ScreenManager Manager = manager ?? (manager = new ScreenManager());

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
@@ -31,6 +32,8 @@ namespace Diablo_Wannabe.Entities.Enemies
             this.LastTimeDamageTaken = new TimeSpan();
             this.healthBar = new HealthBar(this.Position);
             this.LoadContent();
+            this.BoundingBox = new Rectangle((int)this.Position.X - 16, (int)this.Position.Y - 16,
+               (int)this.Sprites[0].FrameDimensions.X/3, (int)this.Sprites[0].FrameDimensions.Y/3);
         }
 
         public new void Move(GameTime gameTime)
@@ -113,17 +116,59 @@ namespace Diablo_Wannabe.Entities.Enemies
                 this.Sprites[1].CurrentFrame.X = 0;
             }
             this.IsHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds < 800)
+            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 100
+                && (int)this.Sprites[1].CurrentFrame.X != 5)
             {
-                this.Sprites[1].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
-                if (this.Sprites[1].CurrentFrame.X > 6)
+                this.Sprites[1].CurrentFrame.X += 1;
+                if ((int)this.Sprites[1].CurrentFrame.X == 4)
                 {
-                    this.Sprites[1].CurrentFrame.X = 0;
+                    CheckForPlayerHit(gameTime);
                 }
+                LastAction = gameTime.TotalGameTime;
             }
-            else
+            else if ((int)this.Sprites[1].CurrentFrame.X == 5)
             {
                 IsHitting = false;
+            }
+        }
+
+        private void CheckForPlayerHit(GameTime gameTime)
+        {
+            if ((int)this.Sprites[1].CurrentFrame.Y == 0)
+            {
+                    if (Math.Abs(this.Position.X - Map.Player.Position.X) < 40
+                        && this.Position.Y > Map.Player.Position.Y
+                        && this.Position.Y - WeaponRange < Map.Player.Position.Y)
+                    {
+                        Map.Player.TakeDamage(this.Damage, gameTime);
+                    }
+            }
+            else if ((int)this.Sprites[1].CurrentFrame.Y == 1)
+            {
+                    if (Math.Abs(this.Position.Y - Map.Player.Position.Y) < 40
+                        && this.Position.X > Map.Player.Position.X
+                        && this.Position.X - WeaponRange < Map.Player.Position.X)
+                    {
+                        Map.Player.TakeDamage(this.Damage, gameTime);
+                    }
+            }
+            else if ((int)this.Sprites[1].CurrentFrame.Y == 2)
+            {
+                    if (Math.Abs(this.Position.X - Map.Player.Position.X) < 40
+                        && this.Position.Y < Map.Player.Position.Y
+                        && this.Position.Y + WeaponRange > Map.Player.Position.Y)
+                    {
+                        Map.Player.TakeDamage(this.Damage, gameTime); ;
+                    }
+            }
+            else if ((int)this.Sprites[1].CurrentFrame.Y == 3)
+            {
+                    if (Math.Abs(this.Position.Y - Map.Player.Position.Y) < 40
+                        && this.Position.X < Map.Player.Position.X
+                        && this.Position.X + WeaponRange > Map.Player.Position.X)
+                    {
+                        Map.Player.TakeDamage(this.Damage, gameTime); ;
+                    }
             }
         }
 
@@ -197,12 +242,18 @@ namespace Diablo_Wannabe.Entities.Enemies
             {
                 PlayDeathAnimation(gameTime);
                 Sprites[2].Update();
+                this.BoundingBox = Rectangle.Empty;
                 return;
             }
 
+            this.BoundingBox.X = (int)this.Position.X - 16;
+            this.BoundingBox.Y = (int)this.Position.Y - 16;
+            Debug.WriteLine("ER - " + this.BoundingBox.X + " " + this.BoundingBox.Y);
+            Debug.WriteLine("EP - " + this.Position.X + " " + this.Position.Y);
+
             if (CalculateDistance(this.Position, Map.Player.Position) < 150)
             {
-                if (CalculateDistance(this.Position, Map.Player.Position) > 30)
+                if (CalculateDistance(this.Position, Map.Player.Position) > 40)
                 {
                     this.Move(gameTime);
                 }
@@ -223,11 +274,12 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            this.healthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
 
             if (IsHitting)
             {
                 Sprites[1].Draw(spriteBatch);
+                this.healthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
+
             }
             else if (!IsAlive)
             {
@@ -236,16 +288,35 @@ namespace Diablo_Wannabe.Entities.Enemies
             else
             {
                 Sprites[0].Draw(spriteBatch);
+                this.healthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
+
             }
         }
 
         private bool CheckForCollision(int movementX, int movementY)
         {
-            return Map.tiles.Any(t => t.TileSprite.Position.X - 16 <= this.Position.X + movementX
-                       && t.TileSprite.Position.Y - 16 <= this.Position.Y + movementY
-                       && t.TileSprite.Position.X + 16 > this.Position.X + movementX
-                       && t.TileSprite.Position.Y + 16 > this.Position.Y + movementY
-                       && t.isPassable);
+            bool canPass = true;
+
+            Rectangle someRect = this.BoundingBox;
+            someRect.X += movementX;
+            someRect.Y += movementY;
+
+            if (Map.tiles.Any(t => t.BoundingBox.Intersects(someRect)))
+            {
+                canPass = false;
+            }
+
+            if (Map.Enemies.Any(e => e.BoundingBox.Intersects(someRect)
+                                && e != this))
+            {
+                canPass = false;
+            }
+
+            if (Map.Player.BoundingBox.Intersects(someRect))
+            {
+                canPass = false;
+            }
+            return canPass;
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Diablo_Wannabe.Entities
         public TimeSpan LastTimeDamageTaken;
 
         public SpriteSheet[] Sprites;
+        public Rectangle BoundingBox;
 
         public virtual void Move(GameTime gameTime)
         {

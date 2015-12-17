@@ -13,12 +13,22 @@ namespace Diablo_Wannabe.Maps
         private int tileFrameX;
         private int tileFrameY;
         public bool isPassable;
+        public Rectangle BoundingBox;
 
         public Tile(int frameX, int frameY, Vector2 position, bool isPassable, string path)
         {
             this.TileFrameX = frameX;
             this.TileFrameY = frameY;
             this.isPassable = isPassable;
+
+            if (!isPassable)
+            {
+                this.BoundingBox = new Rectangle((int)position.X - 16, (int)position.Y - 16, 32, 32);
+            }
+            else
+            {
+                this.BoundingBox = Rectangle.Empty;
+            }
 
             TileSprite = new SpriteSheet(8, 8, position, path)
             {

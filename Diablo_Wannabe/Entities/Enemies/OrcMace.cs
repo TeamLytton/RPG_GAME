@@ -11,7 +11,7 @@ namespace Diablo_Wannabe.Entities.Enemies
         private const int DefaultHealth = 100;
         private const int DefaultWeaponRange = 45;
         private const int DefaultArmor = 20;
-        private const int DefaultDamage = 15;
+        private const int DefaultDamage = 50;
 
         public OrcMace(Vector2 position) 
             : base(position, DefaultPath, DefaultMovementSpeed, DefaultHealth, DefaultWeaponRange, DefaultArmor, DefaultDamage)

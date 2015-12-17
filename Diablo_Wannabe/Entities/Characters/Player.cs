@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
@@ -23,6 +24,7 @@ namespace Diablo_Wannabe.Entities.Characters
             this.Sprites[1] = new SpriteSheet(8, 4, this.Position, path + "hitting");
             this.Sprites[2] = new SpriteSheet(7, 4, this.Position, path + "spellcast");
             this.Sprites[3] = new SpriteSheet(6, 1, this.Position, path + "death");
+            this.IsAlive = true;
             this.MovementSpeed = movementSpeed;
             this.WeaponRange = weaponRange;
             this.Health = health;
@@ -31,36 +33,41 @@ namespace Diablo_Wannabe.Entities.Characters
             this.Damage = damage;
             this.LastAction = new TimeSpan();
             this.LastTimeDamageTaken = new TimeSpan();
-            this.HealthBar = new HealthBar(new Vector2(this.Position.X, this.Position.Y - 40));
+            this.HealthBar = new HealthBar(new Vector2(this.Position.X, this.Position.Y - 40));           
             this.LoadContent();
+            this.BoundingBox = new Rectangle((int)this.Position.X - 16, (int)this.Position.Y - 16,
+                (int)this.Sprites[0].FrameDimensions.X/2, (int)this.Sprites[0].FrameDimensions.Y/2);
         }
 
         public override void Move(GameTime gameTime)
         {
-            if (!Input.Manager.KeyDown(Keys.Left, Keys.Right))
+            if (!IsHitting)
             {
-                if (Input.Manager.KeyDown(Keys.Up))
+                if (!Input.Manager.KeyDown(Keys.Left, Keys.Right))
                 {
-                    this.IsMoving = true;
-                    MoveUp(gameTime);
+                    if (Input.Manager.KeyDown(Keys.Up))
+                    {
+                        this.IsMoving = true;
+                        MoveUp(gameTime);
+                    }
+                    if (Input.Manager.KeyDown(Keys.Down))
+                    {
+                        this.IsMoving = true;
+                        MoveDown(gameTime);
+                    }
                 }
-                if (Input.Manager.KeyDown(Keys.Down))
+                if (!Input.Manager.KeyDown(Keys.Up, Keys.Down))
                 {
-                    this.IsMoving = true;
-                    MoveDown(gameTime);
-                }
-            }
-            if (!Input.Manager.KeyDown(Keys.Up, Keys.Down))
-            {
-                if (Input.Manager.KeyDown(Keys.Left))
-                {
-                    this.IsMoving = true;
-                    MoveLeft(gameTime);
-                }
-                if (Input.Manager.KeyDown(Keys.Right))
-                {
-                    this.IsMoving = true;
-                    MoveRight(gameTime);
+                    if (Input.Manager.KeyDown(Keys.Left))
+                    {
+                        this.IsMoving = true;
+                        MoveLeft(gameTime);
+                    }
+                    if (Input.Manager.KeyDown(Keys.Right))
+                    {
+                        this.IsMoving = true;
+                        MoveRight(gameTime);
+                    }
                 }
             }
             if (Input.Manager.KeyPressed(Keys.Space) || IsHitting)
@@ -150,9 +157,43 @@ namespace Diablo_Wannabe.Entities.Characters
             }
         }
 
+        public void TakeDamage(int damage, GameTime gameTime)
+        {
+            if (damage - Armor > 0)
+            {
+                this.Health -= damage - Armor;
+            }
+            if (this.Health <= 0 && IsAlive)
+            {
+                this.Die(gameTime);
+            }
+        }
+
+        protected virtual void Die(GameTime gameTime)
+        {
+            this.IsAlive = false;
+            this.IsHitting = false;
+            this.IsMoving = false;
+            this.Sprites[3].CurrentFrame.Y = 0;
+            this.Sprites[3].CurrentFrame.X = 0;
+            this.Sprites[3].Position = this.Position;
+            this.LastAction = gameTime.TotalGameTime;
+        }
+
+        protected virtual void PlayDeathAnimation(GameTime gameTime)
+        {
+            if ((gameTime.TotalGameTime.Milliseconds - this.LastAction.Milliseconds > 80 && this.Sprites[3].CurrentFrame.X < 6)
+                || (int)this.Sprites[3].CurrentFrame.X == 0
+                || (int)this.Sprites[3].CurrentFrame.X == 1)
+            {
+                this.LastAction = gameTime.TotalGameTime;
+                this.Sprites[3].CurrentFrame.X++;
+            }
+        }
+
         private void MoveUp(GameTime gameTime)
         {
-            if (this.CheckForCollision(0, (int) MovementSpeed*(-1)))
+            if (this.CheckForCollision(0, (int)-MovementSpeed))
             {
                 this.Position.Y -= this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
@@ -167,7 +208,7 @@ namespace Diablo_Wannabe.Entities.Characters
 
         private void MoveDown(GameTime gameTime)
         {
-            if (this.CheckForCollision(0, (int)this.MovementSpeed))
+            if (this.CheckForCollision(0,(int)this.MovementSpeed))
             {
                 this.Position.Y += this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
@@ -224,44 +265,71 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public override void Update(GameTime gameTime)
         {
-            this.Move(gameTime);
-            if (IsHitting)
+            if (IsAlive)
             {
-                Sprites[1].Update();
+                this.Move(gameTime);
+                this.BoundingBox.X = (int)this.Position.X - 16;
+                this.BoundingBox.Y = (int)this.Position.Y - 16;
+                if (IsHitting)
+                {
+                    Sprites[1].Update();
+                }
+                else if (IsMoving)
+                {
+                    Sprites[0].Update();
+
+                }
+
+                Debug.WriteLine("PR - " + this.BoundingBox.X + " " + this.BoundingBox.Y);
+                Debug.WriteLine("PP - " + this.Position.X + " " + this.Position.Y);
             }
             else
             {
-                Sprites[0].Update();
+                this.Sprites[3].Update();
+                PlayDeathAnimation(gameTime);
             }
-        }
-
-        private new void Die()
-        {
-            throw new NotImplementedException();
         }
 
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            this.HealthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
-
-            if (IsHitting)
+            if (IsAlive)
             {
-                Sprites[1].Draw(spriteBatch);
+                this.HealthBar.Draw(spriteBatch, this.Health, this.MaxHealth, this.Position);
+
+                if (IsHitting)
+                {
+                    Sprites[1].Draw(spriteBatch);
+                }
+                else
+                {
+                    Sprites[0].Draw(spriteBatch);
+                }
             }
             else
             {
-                Sprites[0].Draw(spriteBatch);
-            }
+                Sprites[3].Draw(spriteBatch);
+            }       
         }
 
         private bool CheckForCollision(int movementX, int movementY)
         {
-            return Map.tiles.Any(t => t.TileSprite.Position.X - 16 <= this.Position.X + movementX
-                       && t.TileSprite.Position.Y - 16 <= this.Position.Y + movementY
-                       && t.TileSprite.Position.X + 16 > this.Position.X + movementX
-                       && t.TileSprite.Position.Y + 16 > this.Position.Y + movementY
-                       && t.isPassable);
+            bool canPass = true;
+
+            Rectangle someRect = this.BoundingBox;
+            someRect.X += movementX;
+            someRect.Y += movementY;
+
+            if (Map.tiles.Any(t => t.BoundingBox.Intersects(someRect)))
+            {
+                canPass = false;
+            }
+
+            if (Map.Enemies.Any(e => e.BoundingBox.Intersects(someRect)))
+            {
+                canPass = false;
+            }
+            return canPass;
         }
     }
 }

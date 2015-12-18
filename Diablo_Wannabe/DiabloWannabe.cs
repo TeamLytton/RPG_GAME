@@ -19,8 +19,8 @@ namespace Diablo_Wannabe
 
         protected override void Initialize()
         {
-            this.graphics.PreferredBackBufferWidth = (int)ScreenManager.Manager.Dimensions.X;
-            this.graphics.PreferredBackBufferHeight = (int)ScreenManager.Manager.Dimensions.Y;
+            this.graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.Dimensions.X;
+            this.graphics.PreferredBackBufferHeight = (int)ScreenManager.Instance.Dimensions.Y;
             this.graphics.ApplyChanges();
             this.IsMouseVisible = true;
             base.Initialize();
@@ -30,9 +30,9 @@ namespace Diablo_Wannabe
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            ScreenManager.Manager.GraphicsDevice = this.GraphicsDevice;
-            ScreenManager.Manager.SpriteBatch = this.spriteBatch;
-            ScreenManager.Manager.LoadContent(this.Content);    
+            ScreenManager.Instance.GraphicsDevice = this.GraphicsDevice;
+            ScreenManager.Instance.SpriteBatch = this.spriteBatch;
+            ScreenManager.Instance.LoadContent(this.Content);    
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Diablo_Wannabe
         /// </summary>
         protected override void UnloadContent()
         {
-            ScreenManager.Manager.UnloadContent();
+            ScreenManager.Instance.UnloadContent();
         }
 
         /// <summary>
@@ -51,13 +51,13 @@ namespace Diablo_Wannabe
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            Input.Manager.Update();
+            Input.Instance.Update();
 
-            if (Input.Manager.KeyPressed(Keys.Escape))
+            if (Input.Instance.KeyPressed(Keys.Escape))
             {
                 this.Exit();
             }
-            ScreenManager.Manager.Update(gameTime);
+            ScreenManager.Instance.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -71,7 +71,7 @@ namespace Diablo_Wannabe
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            ScreenManager.Manager.Draw(spriteBatch);
+            ScreenManager.Instance.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

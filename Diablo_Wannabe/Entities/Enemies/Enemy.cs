@@ -233,7 +233,7 @@ namespace Diablo_Wannabe.Entities.Enemies
         {
             foreach (var sprite in Sprites)
             {
-                sprite.LoadContent(ScreenManager.Manager.Content);
+                sprite.LoadContent(ScreenManager.Instance.Content);
             }
         }
 

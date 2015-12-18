@@ -23,8 +23,8 @@ namespace Diablo_Wannabe.Screens
         {
             this.content =
                 new ContentManager(
-                ScreenManager.Manager.Content.ServiceProvider,
-                ScreenManager.Manager.Content.RootDirectory);
+                ScreenManager.Instance.Content.ServiceProvider,
+                ScreenManager.Instance.Content.RootDirectory);
         }
 
         public virtual void UnloadContent()

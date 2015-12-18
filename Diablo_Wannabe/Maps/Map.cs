@@ -1,9 +1,12 @@
-﻿using System.CodeDom;
+﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Diablo_Wannabe.Entities.Enemies;
 using Diablo_Wannabe.Entities.Characters;
 using Diablo_Wannabe.Interfaces;
+using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -16,19 +19,44 @@ namespace Diablo_Wannabe.Maps
         private static int posY;
         public static Player Player;
         public static List<Enemy> Enemies;
-        public static List<IItem> DroppedItems; 
+        public static List<IItem> DroppedItems;
+        public static SpriteFont sf;
+        private static TimeSpan EnemySpawner;
+
+        public static void SpawnEnemies(GameTime gameTime)
+        {
+            if ((int)gameTime.TotalGameTime.TotalMinutes - (int)EnemySpawner.TotalMinutes == 1
+                || EnemySpawner.Ticks == 0)
+            {
+                EnemySpawner = gameTime.TotalGameTime;
+                Random rnd = new Random();
+                int enemiesToSpawn = rnd.Next(10, 20);
+                for (int i = 0; i < enemiesToSpawn; i++)
+                {
+                    int posToSpawnX = rnd.Next(400, 760);
+                    int posToSpawnY = rnd.Next(50, 300);
+
+                    if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                        || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                    {
+                        i--;
+                        continue;
+                    }
+
+                    Enemies.Add(new OrcMace(new Vector2(posToSpawnX, posToSpawnY)));
+                }
+            }
+        }
 
         public static void Initialize()
         {
             FillMap();
+            sf = ScreenManager.Instance.Content.Load<SpriteFont>("fonts/default_font");
             Player = new Knight("Entities/player-knight-");
             Player.LoadContent();
             DroppedItems = new List<IItem>();
+            EnemySpawner = new TimeSpan();
             Enemies = new List<Enemy>(); 
-            Enemies.Add(new OrcMace(new Vector2(500,300)));
-            Enemies.Add(new OrcMace(new Vector2(650,200)));
-            Enemies.Add(new OrcMace(new Vector2(500, 150)));
-            Enemies.Add(new OrcMace(new Vector2(650, 100)));
             foreach (var enemy in Enemies)
             {
                 enemy.LoadContent();

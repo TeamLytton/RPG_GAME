@@ -22,9 +22,9 @@ namespace Diablo_Wannabe
             set { this.mouseState = value; }
         }
 
-        private static Input manager;
+        private static Input instance;
 
-        public static Input Manager = manager ?? (manager = new Input());
+        public static Input Instance = instance ?? (instance = new Input());
 
         private Input()
         {

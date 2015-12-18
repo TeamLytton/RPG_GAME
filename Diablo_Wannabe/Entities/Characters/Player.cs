@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Diablo_Wannabe.Entities.Items;
 using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
@@ -17,13 +18,15 @@ namespace Diablo_Wannabe.Entities.Characters
 {
     public class Player : Unit
     {
+        private StringBuilder sb;
+
         public HealthBar HealthBar;
 
         public List<IItem> Items { get; set; }
 
         public Player(string path, int movementSpeed, int weaponRange, int health, int armor, int damage)
         {
-            this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y - 20);
+            this.Position = new Vector2(ScreenManager.Instance.Dimensions.X / 2, ScreenManager.Instance.Dimensions.Y - 20);
             this.Sprites = new SpriteSheet[4];
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, path + "walk");
             this.Sprites[1] = new SpriteSheet(8, 4, this.Position, path + "hitting");
@@ -63,40 +66,40 @@ namespace Diablo_Wannabe.Entities.Characters
         {
             if (!IsHitting)
             {
-                if (!Input.Manager.KeyDown(Keys.Left, Keys.Right))
+                if (!Input.Instance.KeyDown(Keys.Left, Keys.Right))
                 {
-                    if (Input.Manager.KeyDown(Keys.Up))
+                    if (Input.Instance.KeyDown(Keys.Up))
                     {
                         this.IsMoving = true;
                         MoveUp(gameTime);
                     }
-                    if (Input.Manager.KeyDown(Keys.Down))
+                    if (Input.Instance.KeyDown(Keys.Down))
                     {
                         this.IsMoving = true;
                         MoveDown(gameTime);
                     }
                 }
-                if (!Input.Manager.KeyDown(Keys.Up, Keys.Down))
+                if (!Input.Instance.KeyDown(Keys.Up, Keys.Down))
                 {
-                    if (Input.Manager.KeyDown(Keys.Left))
+                    if (Input.Instance.KeyDown(Keys.Left))
                     {
                         this.IsMoving = true;
                         MoveLeft(gameTime);
                     }
-                    if (Input.Manager.KeyDown(Keys.Right))
+                    if (Input.Instance.KeyDown(Keys.Right))
                     {
                         this.IsMoving = true;
                         MoveRight(gameTime);
                     }
                 }
-                if (Input.Manager.KeyPressed(Keys.F))
+                if (Input.Instance.KeyPressed(Keys.F))
                 {
                     this.PickItem();
 
                     this.Items.Where(i => i is StatCrystal
                                         && !((StatCrystal)i).HasBeenUsed).ToList().ForEach(i => i.Use(this));
                 }
-                if (Input.Manager.KeyPressed(Keys.D1))
+                if (Input.Instance.KeyPressed(Keys.D1))
                 {
                     if (this.Items.Any(i => i.GetType().Name == "HealingPotion"))
                     {
@@ -104,7 +107,7 @@ namespace Diablo_Wannabe.Entities.Characters
                     }
                 }
             }
-            if (Input.Manager.KeyPressed(Keys.Space) || IsHitting)
+            if (Input.Instance.KeyPressed(Keys.Space) || IsHitting)
             {
                 PlayHitAnimation(gameTime);
             }
@@ -197,6 +200,10 @@ namespace Diablo_Wannabe.Entities.Characters
                 if (damage - Armor > 0)
                 {
                     this.Health -= damage - Armor;
+                }
+                else
+                {
+                    this.Health -= 2;
                 }
                 if (this.Health <= 0 && IsAlive)
                 {
@@ -291,13 +298,15 @@ namespace Diablo_Wannabe.Entities.Characters
         {
             foreach (var sprite in Sprites)
             {
-                sprite.LoadContent(ScreenManager.Manager.Content);
+                sprite.LoadContent(ScreenManager.Instance.Content);
             }
         }
 
         public override void UnloadContent()
         {
         }
+
+
 
         public override void Update(GameTime gameTime)
         {
@@ -344,7 +353,34 @@ namespace Diablo_Wannabe.Entities.Characters
             else
             {
                 Sprites[3].Draw(spriteBatch);
+            }
+
+            if (Input.Instance.KeyDown(Keys.S))
+            {
+                DrawStats(spriteBatch);
             }       
+        }
+
+        private void DrawStats(SpriteBatch spriteBatch)
+        {
+            sb = new StringBuilder();
+            sb.AppendLine("Damage: " + this.Damage);
+            sb.AppendLine("Armor: " + this.Armor);
+            sb.AppendLine("Health: " + this.Health);
+            sb.AppendLine("Max Health: " + this.MaxHealth);
+            sb.AppendLine("Weapon Range: " + this.WeaponRange);
+            sb.AppendLine("Movement Speed: " + this.MovementSpeed);
+            sb.AppendLine("\nItems:");
+            if (this.Items.Any())
+            {
+                this.Items.Where(i => !(i is StatCrystal)).ToList().ForEach(i => sb.AppendFormat("-- {0}\n", i.GetType().Name));     
+            }
+            else
+            {
+                sb.AppendLine("N/A");
+            }
+
+            spriteBatch.DrawString(Map.sf, sb, Input.Instance.MouseState.Position.ToVector2(), Color.Black);
         }
 
         private bool CheckForCollision(int movementX, int movementY)

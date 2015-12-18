@@ -38,7 +38,7 @@ namespace Diablo_Wannabe.Maps
                     Y = TileFrameY
                 }
             };      
-            TileSprite.LoadContent(ScreenManager.Manager.Content);
+            TileSprite.LoadContent(ScreenManager.Instance.Content);
         }
 
         public int TileFrameX

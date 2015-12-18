@@ -47,8 +47,8 @@ namespace Diablo_Wannabe.ImageProcessing
         {
             content =
                 new ContentManager
-                (ScreenManager.Manager.Content.ServiceProvider,
-                 ScreenManager.Manager.Content.RootDirectory);
+                (ScreenManager.Instance.Content.ServiceProvider,
+                 ScreenManager.Instance.Content.RootDirectory);
 
             if (Path != string.Empty)
             {
@@ -73,23 +73,23 @@ namespace Diablo_Wannabe.ImageProcessing
             }
 
             renderTarget = new RenderTarget2D
-                (ScreenManager.Manager.GraphicsDevice,
+                (ScreenManager.Instance.GraphicsDevice,
                 (int)dimensions.X,
                 (int)dimensions.Y);
 
-            ScreenManager.Manager.GraphicsDevice.SetRenderTarget(renderTarget);
-            ScreenManager.Manager.GraphicsDevice.Clear(Color.Transparent);
-            ScreenManager.Manager.SpriteBatch.Begin();
+            ScreenManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+            ScreenManager.Instance.GraphicsDevice.Clear(Color.Transparent);
+            ScreenManager.Instance.SpriteBatch.Begin();
             if (Texture != null)
             {
-                ScreenManager.Manager.SpriteBatch.Draw(Texture, Vector2.Zero, Color.White);
+                ScreenManager.Instance.SpriteBatch.Draw(Texture, Vector2.Zero, Color.White);
             }
-            ScreenManager.Manager.SpriteBatch.DrawString(spriteFont, Text, Vector2.Zero, Color.White);
-            ScreenManager.Manager.SpriteBatch.End();
+            ScreenManager.Instance.SpriteBatch.DrawString(spriteFont, Text, Vector2.Zero, Color.White);
+            ScreenManager.Instance.SpriteBatch.End();
 
             Texture = renderTarget;
 
-            ScreenManager.Manager.GraphicsDevice.SetRenderTarget(null);
+            ScreenManager.Instance.GraphicsDevice.SetRenderTarget(null);
         }
 
         public void UnloadContent()

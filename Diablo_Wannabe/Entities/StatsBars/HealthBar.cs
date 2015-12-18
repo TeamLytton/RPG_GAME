@@ -15,8 +15,8 @@ namespace Diablo_Wannabe.Entities.StatsBars
         {
             this.redBar = new SpriteSheet(1, 1, position, "statsbars/red_bar");
             this.greenBar = new SpriteSheet(60, 1, position, "statsbars/green_bar");
-            this.redBar.LoadContent(ScreenManager.Manager.Content);
-            this.greenBar.LoadContent(ScreenManager.Manager.Content);
+            this.redBar.LoadContent(ScreenManager.Instance.Content);
+            this.greenBar.LoadContent(ScreenManager.Instance.Content);
             this.greenBar.Origin = Vector2.Zero;
             this.redBar.Origin = Vector2.Zero;
 

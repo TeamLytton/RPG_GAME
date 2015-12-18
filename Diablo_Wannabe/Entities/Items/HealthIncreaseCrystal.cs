@@ -18,6 +18,7 @@ namespace Diablo_Wannabe.Entities.Items
         public override void Use(Player player)
         {
             player.MaxHealth += this.valueModifier;
+            player.Health += this.valueModifier;
             this.HasBeenUsed = true;
 
         }

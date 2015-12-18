@@ -56,7 +56,7 @@ namespace Diablo_Wannabe.Entities.Characters
         public override void Move(GameTime gameTime)
         {
             base.Move(gameTime);
-            if (Input.Manager.KeyPressed(Keys.A) 
+            if (Input.Instance.KeyPressed(Keys.A) 
                 || IsCasting)
             {
                 PlayCastAnimation(gameTime);

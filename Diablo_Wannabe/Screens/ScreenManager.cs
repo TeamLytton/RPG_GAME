@@ -7,7 +7,7 @@ namespace Diablo_Wannabe.Screens
 {
     public class ScreenManager
     {
-        private static ScreenManager manager;
+        private static ScreenManager instance;
         public Vector2 Dimensions { get; private set; }
         public ContentManager Content { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Diablo_Wannabe.Screens
             CurrentScreen = new MenuScreen();
         }
 
-        public static ScreenManager Manager = manager ?? (manager = new ScreenManager());
+        public static ScreenManager Instance = instance ?? (instance = new ScreenManager());
 
         public void LoadContent(ContentManager content)
         {

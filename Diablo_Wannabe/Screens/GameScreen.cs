@@ -24,6 +24,7 @@ namespace Diablo_Wannabe.Screens
             base.Update(gameTime);
             Map.Enemies.ForEach(e => e.Update(gameTime));
             Map.Player.Update(gameTime);
+            Map.SpawnEnemies(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

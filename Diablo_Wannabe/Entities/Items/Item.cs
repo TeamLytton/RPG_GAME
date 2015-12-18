@@ -23,7 +23,7 @@ namespace Diablo_Wannabe.Entities.Items
         {
             this.Position = position;
             this.Sprite = new SpriteSheet(framesX, framesY, Position, path);
-            this.Sprite.LoadContent(ScreenManager.Manager.Content);
+            this.Sprite.LoadContent(ScreenManager.Instance.Content);
             this.GotPicked = false;
         }
 

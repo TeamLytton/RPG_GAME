@@ -42,7 +42,11 @@
     <Compile Include="Entities\Characters\Archer.cs" />
     <Compile Include="Entities\Characters\Knight.cs" />
     <Compile Include="Entities\Characters\Mage.cs" />
+    <Compile Include="Entities\Enemies\Boss.cs" />
+    <Compile Include="Entities\Enemies\DarkElfSpear.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
+    <Compile Include="Entities\Enemies\RedOrcTrident.cs" />
+    <Compile Include="Entities\Enemies\SkeletonArcher.cs" />
     <Compile Include="Entities\GameObject.cs" />
     <Compile Include="Entities\Enemies\OrcMace.cs" />
     <Compile Include="Entities\Characters\Player.cs" />
@@ -52,6 +56,9 @@
     <Compile Include="Entities\Items\HealthIncreaseCrystal.cs" />
     <Compile Include="Entities\Items\Item.cs" />
     <Compile Include="Entities\Items\StatCrystal.cs" />
+    <Compile Include="Entities\Wife.cs" />
+    <Compile Include="Entities\Projectiles\Arrow.cs" />
+    <Compile Include="Entities\Projectiles\SkeletonArrow.cs" />
     <Compile Include="Entities\StatsBars\HealthBar.cs" />
     <Compile Include="Entities\Unit.cs" />
     <Compile Include="ImageProcessing\Image.cs" />
@@ -63,6 +70,7 @@
     <Compile Include="Interfaces\IItem.cs" />
     <Compile Include="Interfaces\IMovable.cs" />
     <Compile Include="Interfaces\IPickable.cs" />
+    <Compile Include="Interfaces\IProjectile.cs" />
     <Compile Include="Interfaces\IShooter.cs" />
     <Compile Include="Interfaces\IUnit.cs" />
     <Compile Include="Interfaces\IUsable.cs" />

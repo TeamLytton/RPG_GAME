@@ -1,8 +1,8 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Diablo_Wannabe.Entities;
 using Diablo_Wannabe.Entities.Enemies;
 using Diablo_Wannabe.Entities.Characters;
 using Diablo_Wannabe.Interfaces;
@@ -18,41 +18,169 @@ namespace Diablo_Wannabe.Maps
         private static int posX;
         private static int posY;
         public static Player Player;
+        public static Wife Wife;
         public static List<Enemy> Enemies;
         public static List<IItem> DroppedItems;
         public static SpriteFont sf;
         private static TimeSpan EnemySpawner;
+        private static int Wave;
 
         public static void SpawnEnemies(GameTime gameTime)
         {
             if ((int)gameTime.TotalGameTime.TotalSeconds - (int)EnemySpawner.TotalSeconds == 30
                 || EnemySpawner.Ticks == 0)
             {
-                EnemySpawner = gameTime.TotalGameTime;
                 Random rnd = new Random();
-                int enemiesToSpawn = rnd.Next(10, 20);
-                for (int i = 0; i < enemiesToSpawn; i++)
+                int enemiesToSpawn = 0;
+                switch (Wave)
                 {
-                    int posToSpawnX = rnd.Next(400, 760);
-                    int posToSpawnY = rnd.Next(50, 300);
+                    case 1:
+                        EnemySpawner = gameTime.TotalGameTime;
+                        enemiesToSpawn = 10;
 
-                    if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                        || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                    {
-                        i--;
-                        continue;
-                    }
+                        for (int i = 0; i < enemiesToSpawn; i++)
+                        {
+                            int posToSpawnX = rnd.Next(400, 760);
+                            int posToSpawnY = rnd.Next(30, 600);
 
-                    Enemies.Add(new OrcMace(new Vector2(posToSpawnX, posToSpawnY)));
+                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                            {
+                                i--;
+                                continue;
+                            }
+
+                            int enemyType = rnd.Next(0, 2);
+                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
+                        }
+                        Wave++;
+                        break;
+                    case 2:
+                        EnemySpawner = gameTime.TotalGameTime;
+                        rnd = new Random();
+                        enemiesToSpawn = 15;
+
+                        for (int i = 0; i < enemiesToSpawn; i++)
+                        {
+                            int posToSpawnX = rnd.Next(400, 760);
+                            int posToSpawnY = rnd.Next(30, 600);
+
+                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                            {
+                                i--;
+                                continue;
+                            }
+
+                            int enemyType = rnd.Next(0, 3);
+                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
+                        }
+                        Wave++;
+                        break;
+                    case 3:
+                        EnemySpawner = gameTime.TotalGameTime;
+                        rnd = new Random();
+                        enemiesToSpawn = 30;
+
+                        for (int i = 0; i < enemiesToSpawn; i++)
+                        {
+                            int posToSpawnX = rnd.Next(400, 760);
+                            int posToSpawnY = rnd.Next(30, 600);
+
+                           if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                            {
+                                i--;
+                                continue;
+                            }
+
+                            int enemyType = rnd.Next(0, 4);
+                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
+                        }
+                        Wave++;
+                        break;
+                    case 4:
+                        EnemySpawner = gameTime.TotalGameTime;
+                        rnd = new Random();
+                        enemiesToSpawn = 45;
+
+                        for (int i = 0; i < enemiesToSpawn; i++)
+                        {
+                            int posToSpawnX = rnd.Next(400, 760);
+                            int posToSpawnY = rnd.Next(30, 600);
+
+
+
+                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                            {
+                                i--;
+                                continue;
+                            }
+
+                            int enemyType = rnd.Next(0, 4);
+                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
+                        }
+                        Wave++;
+                        break;
+                    case 5:
+                        EnemySpawner = gameTime.TotalGameTime;
+                        rnd = new Random();
+                        enemiesToSpawn = 60;
+
+                        for (int i = 0; i < enemiesToSpawn; i++)
+                        {
+                            int posToSpawnX = rnd.Next(400, 760);
+                            int posToSpawnY = rnd.Next(30, 600);
+
+
+
+                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
+                            {
+                                i--;
+                                continue;
+                            }
+
+                            int enemyType = rnd.Next(0, 4);
+                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
+                        }
+                        Wave++;
+                        break;
+                    case 6:
+                        Enemies.Add(new Boss(new Vector2(ScreenManager.Instance.Dimensions.X, ScreenManager.Instance.Dimensions.Y/2)));
+                        break;
                 }
+                
+            }
+        }
+
+        private static void CreateEnemy(int enemyType, int posToSpawnX, int posToSpawnY)
+        {
+            switch (enemyType)
+            {
+                case 0:
+                    Enemies.Add(new SkeletonArcher(new Vector2(posToSpawnX, posToSpawnY)));
+                    break;
+                case 1:
+                    Enemies.Add(new DarkElfSpear(new Vector2(posToSpawnX, posToSpawnY)));
+                    break;
+                case 2:
+                    Enemies.Add(new OrcMace(new Vector2(posToSpawnX, posToSpawnY)));
+                    break;
+                case 3:
+                    Enemies.Add(new RedOrcTrident(new Vector2(posToSpawnX, posToSpawnY)));
+                    break;
             }
         }
 
         public static void Initialize()
         {
             FillMap();
+            Wave = 1;
             sf = ScreenManager.Instance.Content.Load<SpriteFont>("fonts/default_font");
-            Player = new Knight("Entities/player-knight-");
+            Player = new Archer();
+            Wife = new Wife();
             Player.LoadContent();
             DroppedItems = new List<IItem>();
             EnemySpawner = new TimeSpan();
@@ -168,6 +296,9 @@ namespace Diablo_Wannabe.Maps
             {
                 enemy.Draw(spriteBatch);
             }
+
+            Wife.Draw(spriteBatch);
+
             Player.Draw(spriteBatch);
         }
     }

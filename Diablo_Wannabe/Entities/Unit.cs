@@ -46,11 +46,9 @@ namespace Diablo_Wannabe.Entities
         {
         }
 
-
         public virtual void Update(GameTime gameTime)
         {
         }
-
 
         protected virtual void Die()
         {

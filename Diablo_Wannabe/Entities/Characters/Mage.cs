@@ -1,4 +1,5 @@
-﻿using Diablo_Wannabe.Interfaces;
+﻿using Diablo_Wannabe.ImageProcessing;
+using Diablo_Wannabe.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,45 +13,30 @@ namespace Diablo_Wannabe.Entities.Characters
         private const int MageDefaultHealth = 70;
         private const int MageDefaultArmor = 20;
         private const int MageDefaultDamage = 25;
+        private const string DefaultPath = "Entities/player-mage-";
 
         public bool IsCasting { get; set; }
 
-        public Mage(string path) 
-            : base(path, MageDefaultMoveSpeed, MageDefaultWeaponRange, MageDefaultHealth, MageDefaultArmor, MageDefaultDamage)
+        public Mage() 
+            : base(MageDefaultMoveSpeed, MageDefaultWeaponRange, MageDefaultHealth, MageDefaultArmor, MageDefaultDamage)
         {
+            this.Sprites[0] = new SpriteSheet(9, 4, this.Position, DefaultPath + "walking");
+            this.Sprites[1] = new SpriteSheet(7, 4, this.Position, DefaultPath + "casting");
+            this.Sprites[2] = new SpriteSheet(6, 1, this.Position, DefaultPath + "death");
+            this.LoadContent();
+
+            this.BoundingBox = new Rectangle((int)this.Position.X - 16, (int)this.Position.Y - 16,
+            (int)this.Sprites[0].FrameDimensions.X / 2, (int)this.Sprites[0].FrameDimensions.Y / 2);
         }
 
         public override void Update(GameTime gameTime)
         {
-            this.Move(gameTime);
-            if (IsHitting)
-            {
-                Sprites[1].Update();
-            }
-            else if (IsCasting)
-            {
-                Sprites[2].Update();
-            }
-            else
-            {
-                Sprites[0].Update();
-            }
+            base.Update(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (IsHitting)
-            {
-                Sprites[1].Draw(spriteBatch);
-            }
-            else if (IsCasting)
-            {
-                Sprites[2].Draw(spriteBatch);
-            }
-            else
-            {
-                Sprites[0].Draw(spriteBatch);
-            }
+            base.Draw(spriteBatch);
         }
 
         public override void Move(GameTime gameTime)
@@ -65,26 +51,6 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public void PlayCastAnimation(GameTime gameTime)
         {
-            if (!IsCasting)
-            {
-                this.LastAction = gameTime.TotalGameTime;
-                this.Sprites[2].Position = this.Position;
-                this.Sprites[2].CurrentFrame.Y = this.Sprites[0].CurrentFrame.Y;
-                this.Sprites[2].CurrentFrame.X = 0;
-            }
-            this.IsCasting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds < 1000)
-            {
-                this.Sprites[2].CurrentFrame.X += 60 / gameTime.ElapsedGameTime.Milliseconds * 0.04f;
-                if (this.Sprites[2].CurrentFrame.X > 7)
-                {
-                    this.Sprites[2].CurrentFrame.X = 0;
-                }
-            }
-            else
-            {
-                IsCasting = false;
-            }
         }
     }
 }

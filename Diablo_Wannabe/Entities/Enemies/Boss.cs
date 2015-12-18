@@ -1,20 +1,18 @@
-﻿
-using Diablo_Wannabe.Entities.StatsBars;
-using Diablo_Wannabe.ImageProcessing;
+﻿using Diablo_Wannabe.ImageProcessing;
 using Microsoft.Xna.Framework;
 
 namespace Diablo_Wannabe.Entities.Enemies
 {
-    public class OrcMace : Enemy
+    public class Boss : Enemy
     {
-        private const string DefaultPath = "Entities/orc-mace-";
-        private const int DefaultMovementSpeed = 2;
-        private const int DefaultHealth = 100;
-        private const int DefaultWeaponRange = 45;
-        private const int DefaultArmor = 20;
-        private const int DefaultDamage = 50;
+        private const string DefaultPath = "Entities/boss-";
+        private const int DefaultMovementSpeed = 1;
+        private const int DefaultHealth = 2200;
+        private const int DefaultWeaponRange = 50;
+        private const int DefaultArmor = 100;
+        private const int DefaultDamage = 300;
 
-        public OrcMace(Vector2 position) 
+        public Boss(Vector2 position) 
             : base(position, DefaultPath, DefaultMovementSpeed, DefaultHealth, DefaultWeaponRange, DefaultArmor, DefaultDamage)
         {
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, path + "walking");

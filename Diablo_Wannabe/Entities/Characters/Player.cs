@@ -24,14 +24,10 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public List<IItem> Items { get; set; }
 
-        public Player(string path, int movementSpeed, int weaponRange, int health, int armor, int damage)
+        public Player(int movementSpeed, int weaponRange, int health, int armor, int damage)
         {
-            this.Position = new Vector2(ScreenManager.Instance.Dimensions.X / 2, ScreenManager.Instance.Dimensions.Y - 20);
-            this.Sprites = new SpriteSheet[4];
-            this.Sprites[0] = new SpriteSheet(9, 4, this.Position, path + "walk");
-            this.Sprites[1] = new SpriteSheet(8, 4, this.Position, path + "hitting");
-            this.Sprites[2] = new SpriteSheet(7, 4, this.Position, path + "spellcast");
-            this.Sprites[3] = new SpriteSheet(6, 1, this.Position, path + "death");
+            this.Position = new Vector2(ScreenManager.Instance.Dimensions.X / 6, ScreenManager.Instance.Dimensions.Y / 2);
+            this.Sprites = new SpriteSheet[3];
             this.IsAlive = true;
             this.MovementSpeed = movementSpeed;
             this.WeaponRange = weaponRange;
@@ -43,9 +39,6 @@ namespace Diablo_Wannabe.Entities.Characters
             this.LastTimeDamageTaken = new TimeSpan();
             this.HealthBar = new HealthBar(new Vector2(this.Position.X, this.Position.Y - 40));         
             this.Items = new List<IItem>();  
-            this.LoadContent();
-            this.BoundingBox = new Rectangle((int)this.Position.X - 16, (int)this.Position.Y - 16,
-                (int)this.Sprites[0].FrameDimensions.X/2, (int)this.Sprites[0].FrameDimensions.Y/2);
         }
 
         public void UseItem(IItem item)
@@ -107,90 +100,6 @@ namespace Diablo_Wannabe.Entities.Characters
                     }
                 }
             }
-            if (Input.Instance.KeyPressed(Keys.Space) || IsHitting)
-            {
-                PlayHitAnimation(gameTime);
-            }
-        }
-
-        private void PlayHitAnimation(GameTime gameTime)
-        {
-            if (!IsHitting)
-            {
-                this.LastAction = gameTime.TotalGameTime;
-                this.Sprites[1].Position = this.Position;
-                this.Sprites[1].CurrentFrame.Y = this.Sprites[0].CurrentFrame.Y;
-                this.Sprites[1].CurrentFrame.X = 0;
-            }
-            this.IsHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 100
-                && (int)this.Sprites[1].CurrentFrame.X != 5)
-            {
-                this.Sprites[1].CurrentFrame.X += 1;
-                if ((int)this.Sprites[1].CurrentFrame.X == 4)
-                {
-                    CheckForEnemyHit(gameTime);
-                }
-                LastAction = gameTime.TotalGameTime;
-            }
-            else if ((int)this.Sprites[1].CurrentFrame.X == 5)
-            {
-                IsHitting = false;
-            }
-        }
-
-        private void CheckForEnemyHit(GameTime gameTime)
-        {
-            if ((int)this.Sprites[1].CurrentFrame.Y == 0)
-            {
-                Map.Enemies.ForEach(e =>
-                {
-                    if (Math.Abs(this.Position.X - e.Position.X) < 40
-                        && this.Position.Y > e.Position.Y
-                        && this.Position.Y - WeaponRange < e.Position.Y)
-                    {
-                        e.TakeDamage(this.Damage, gameTime);;
-                    }
-                });
-            }
-            else if ((int)this.Sprites[1].CurrentFrame.Y == 1)
-            {
-                Map.Enemies.ForEach(e =>
-                {
-                    if (Math.Abs(this.Position.Y - e.Position.Y) < 40
-                        && this.Position.X > e.Position.X
-                        && this.Position.X - WeaponRange < e.Position.X)
-                    {
-                        e.TakeDamage(this.Damage, gameTime);;
-                    }
-                });
-            }
-            else if ((int)this.Sprites[1].CurrentFrame.Y == 2)
-            {
-                Map.Enemies.ForEach(e =>
-                {
-                    if (Math.Abs(this.Position.X - e.Position.X) < 40
-                        && this.Position.Y < e.Position.Y 
-                        && this.Position.Y + WeaponRange > e.Position.Y )
-                    {
-                        e.TakeDamage(this.Damage, gameTime);;
-
-                    }
-                });
-            }
-            else if ((int)this.Sprites[1].CurrentFrame.Y == 3)
-            {
-                Map.Enemies.ForEach(e =>
-                {
-                    if (Math.Abs(this.Position.Y - e.Position.Y) < 40
-                        && this.Position.X < e.Position.X
-                        && this.Position.X + WeaponRange > e.Position.X)
-                    {
-                        e.TakeDamage(this.Damage, gameTime);;
-
-                    }
-                });
-            }
         }
 
         public void TakeDamage(int damage, GameTime gameTime)
@@ -217,30 +126,31 @@ namespace Diablo_Wannabe.Entities.Characters
             this.IsAlive = false;
             this.IsHitting = false;
             this.IsMoving = false;
-            this.Sprites[3].CurrentFrame.Y = 0;
-            this.Sprites[3].CurrentFrame.X = 0;
-            this.Sprites[3].Position = this.Position;
+            this.Sprites[2].CurrentFrame.Y = 0;
+            this.Sprites[2].CurrentFrame.X = 0;
+            this.Sprites[2].Position = this.Position;
             this.LastAction = gameTime.TotalGameTime;
         }
 
         protected virtual void PlayDeathAnimation(GameTime gameTime)
         {
             if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 100
-                && this.Sprites[3].CurrentFrame.X < 6)
+                && this.Sprites[2].CurrentFrame.X < 6)
             {
                 this.LastAction = gameTime.TotalGameTime;
-                this.Sprites[3].CurrentFrame.X++;
-                this.Sprites[3].Update();
+                this.Sprites[2].CurrentFrame.X++;
+                this.Sprites[2].Update();
             }
         }
 
         private void MoveUp(GameTime gameTime)
         {
+            this.Sprites[0].CurrentFrame.Y = 0;
+
             if (this.CheckForCollision(0, (int)-MovementSpeed))
             {
                 this.Position.Y -= this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.Sprites[0].CurrentFrame.Y = 0;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
                 {
@@ -251,11 +161,12 @@ namespace Diablo_Wannabe.Entities.Characters
 
         private void MoveDown(GameTime gameTime)
         {
+            this.Sprites[0].CurrentFrame.Y = 2;
+
             if (this.CheckForCollision(0,(int)this.MovementSpeed))
             {
                 this.Position.Y += this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.Sprites[0].CurrentFrame.Y = 2;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
                 {
@@ -266,11 +177,12 @@ namespace Diablo_Wannabe.Entities.Characters
 
         private void MoveLeft(GameTime gameTime)
         {
+            this.Sprites[0].CurrentFrame.Y = 1;
+
             if (this.CheckForCollision((int)-this.MovementSpeed, 0))
             {
                 this.Position.X -= this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.Sprites[0].CurrentFrame.Y = 1;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
                 {
@@ -281,11 +193,12 @@ namespace Diablo_Wannabe.Entities.Characters
 
         private void MoveRight(GameTime gameTime)
         {
+            this.Sprites[0].CurrentFrame.Y = 3;
+
             if (this.CheckForCollision((int)this.MovementSpeed, 0))
             {
                 this.Position.X += this.MovementSpeed;
                 this.Sprites[0].Position = this.Position;
-                this.Sprites[0].CurrentFrame.Y = 3;
                 this.Sprites[0].CurrentFrame.X += 60/gameTime.ElapsedGameTime.Milliseconds*0.04f;
                 if (this.Sprites[0].CurrentFrame.X > 9 || this.Sprites[0].CurrentFrame.X == 0)
                 {
@@ -306,8 +219,6 @@ namespace Diablo_Wannabe.Entities.Characters
         {
         }
 
-
-
         public override void Update(GameTime gameTime)
         {
             if (IsAlive)
@@ -322,7 +233,6 @@ namespace Diablo_Wannabe.Entities.Characters
                 else if (IsMoving)
                 {
                     Sprites[0].Update();
-
                 }
 
                 Debug.WriteLine("PR - " + this.BoundingBox.X + " " + this.BoundingBox.Y);
@@ -331,6 +241,8 @@ namespace Diablo_Wannabe.Entities.Characters
             else
             {
                 PlayDeathAnimation(gameTime);
+                this.IsAlive = false;
+                this.BoundingBox = Rectangle.Empty;
             }
         }
 
@@ -352,7 +264,7 @@ namespace Diablo_Wannabe.Entities.Characters
             }
             else
             {
-                Sprites[3].Draw(spriteBatch);
+                Sprites[2].Draw(spriteBatch);
             }
 
             if (Input.Instance.KeyDown(Keys.S))
@@ -361,7 +273,7 @@ namespace Diablo_Wannabe.Entities.Characters
             }       
         }
 
-        private void DrawStats(SpriteBatch spriteBatch)
+        protected virtual void DrawStats(SpriteBatch spriteBatch)
         {
             sb = new StringBuilder();
             sb.AppendLine("Damage: " + this.Damage);
@@ -400,6 +312,12 @@ namespace Diablo_Wannabe.Entities.Characters
             {
                 canPass = false;
             }
+
+            if (Map.Wife.BoundingBox.Intersects(someRect))
+            {
+                canPass = false;
+            }
+
             return canPass;
         }
     }

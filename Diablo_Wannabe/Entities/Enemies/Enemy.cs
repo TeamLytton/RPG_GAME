@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using Diablo_Wannabe.Entities.Items;
 using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Maps;
@@ -13,6 +14,7 @@ namespace Diablo_Wannabe.Entities.Enemies
     public abstract class Enemy : Unit
     {
         private HealthBar healthBar;
+        private Random rnd;
 
         protected Enemy(Vector2 position, string path, int movementSpeed, int health, int weaponRange, int armor, int damage)
         {
@@ -22,8 +24,8 @@ namespace Diablo_Wannabe.Entities.Enemies
             this.Sprites[1] = new SpriteSheet(8, 4, this.Position, path + "hitting");
             this.Sprites[2] = new SpriteSheet(6, 1, this.Position, path + "death");
             this.MovementSpeed = movementSpeed;
-            this.Health = health;
             this.MaxHealth = health;
+            this.Health = health;
             this.Armor = armor;
             this.Damage = damage;
             this.WeaponRange = weaponRange;
@@ -86,6 +88,7 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         protected virtual void Die(GameTime gameTime)
         {
+            this.DropItem();
             this.IsAlive = false;
             this.IsHitting = false;
             this.IsMoving = false;
@@ -317,6 +320,29 @@ namespace Diablo_Wannabe.Entities.Enemies
                 canPass = false;
             }
             return canPass;
+        }
+
+        public void DropItem()
+        {
+            Random rnd = new Random();
+
+            int id = rnd.Next(0, 4);
+
+            switch (id)
+            {
+                case 0:
+                    Map.DroppedItems.Add(new HealthIncreaseCrystal(this.Position));
+                    break;
+                case 1:
+                    Map.DroppedItems.Add(new ArmorIncreaseCrystal(this.Position));
+                    break;
+                case 2:
+                    Map.DroppedItems.Add(new DamageIncreaseCrystal(this.Position));
+                    break;
+                case 3:
+                    Map.DroppedItems.Add(new HealingPotion(this.Position));
+                    break;
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Diablo_Wannabe.Entities.Enemies;
 using Diablo_Wannabe.Entities.Characters;
+using Diablo_Wannabe.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,12 +16,14 @@ namespace Diablo_Wannabe.Maps
         private static int posY;
         public static Player Player;
         public static List<Enemy> Enemies;
+        public static List<IItem> DroppedItems; 
 
         public static void Initialize()
         {
             FillMap();
             Player = new Knight("Entities/player-knight-");
             Player.LoadContent();
+            DroppedItems = new List<IItem>();
             Enemies = new List<Enemy>(); 
             Enemies.Add(new OrcMace(new Vector2(500,300)));
             Enemies.Add(new OrcMace(new Vector2(650,200)));
@@ -122,6 +125,15 @@ namespace Diablo_Wannabe.Maps
                 tile.Draw(spriteBatch);
 
             }
+
+            foreach (var item in DroppedItems)
+            {
+                if (!item.GotPicked)
+                {
+                    item.Draw(spriteBatch);
+                }
+            }
+
             foreach (var enemy in Enemies)
             {
                 enemy.Draw(spriteBatch);

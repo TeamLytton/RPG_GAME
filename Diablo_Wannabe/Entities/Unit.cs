@@ -8,14 +8,30 @@ namespace Diablo_Wannabe.Entities
 {
     public abstract class Unit : GameObject, IMovable, IUnit
     {
+        private int health;
+        private int maxHealth;
+
         public float MovementSpeed;
 
         public bool IsMoving;
         public bool IsHitting;
         public bool IsAlive;
 
-        public int MaxHealth { get; set; }
-        public int Health { get; set; }
+        public int MaxHealth
+        {
+            get { return this.maxHealth; }
+            set { this.maxHealth = value; }
+
+        }
+
+        public int Health
+        {
+            get { return health; }
+            set
+            {
+                this.health = value > maxHealth ? maxHealth : value;
+            }
+        }
         public int Armor { get; set; }
         public int Damage { get; set; }
         public int WeaponRange { get; set; }

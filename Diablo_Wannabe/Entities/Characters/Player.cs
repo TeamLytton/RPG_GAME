@@ -1,9 +1,12 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Diablo_Wannabe.Entities.Items;
 using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
+using Diablo_Wannabe.Interfaces;
 using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
@@ -16,6 +19,8 @@ namespace Diablo_Wannabe.Entities.Characters
     {
         public HealthBar HealthBar;
 
+        public List<IItem> Items { get; set; }
+
         public Player(string path, int movementSpeed, int weaponRange, int health, int armor, int damage)
         {
             this.Position = new Vector2(ScreenManager.Manager.Dimensions.X / 2, ScreenManager.Manager.Dimensions.Y - 20);
@@ -27,16 +32,31 @@ namespace Diablo_Wannabe.Entities.Characters
             this.IsAlive = true;
             this.MovementSpeed = movementSpeed;
             this.WeaponRange = weaponRange;
-            this.Health = health;
             this.MaxHealth = health;
+            this.Health = health;
             this.Armor = armor;
             this.Damage = damage;
             this.LastAction = new TimeSpan();
             this.LastTimeDamageTaken = new TimeSpan();
-            this.HealthBar = new HealthBar(new Vector2(this.Position.X, this.Position.Y - 40));           
+            this.HealthBar = new HealthBar(new Vector2(this.Position.X, this.Position.Y - 40));         
+            this.Items = new List<IItem>();  
             this.LoadContent();
             this.BoundingBox = new Rectangle((int)this.Position.X - 16, (int)this.Position.Y - 16,
                 (int)this.Sprites[0].FrameDimensions.X/2, (int)this.Sprites[0].FrameDimensions.Y/2);
+        }
+
+        public void UseItem(IItem item)
+        {
+            item.Use(this);
+            this.Items.Remove(item);
+        }
+
+        public void PickItem()
+        {
+            Map.DroppedItems
+                .Where(d => this.CalculateDistance(this.Position, d.Position) < 30
+                            && d.GotPicked == false)
+                .ToList().ForEach(i => i.GetPicked(this));
         }
 
         public override void Move(GameTime gameTime)
@@ -69,12 +89,25 @@ namespace Diablo_Wannabe.Entities.Characters
                         MoveRight(gameTime);
                     }
                 }
+                if (Input.Manager.KeyPressed(Keys.F))
+                {
+                    this.PickItem();
+
+                    this.Items.Where(i => i is StatCrystal
+                                        && !((StatCrystal)i).HasBeenUsed).ToList().ForEach(i => i.Use(this));
+                }
+                if (Input.Manager.KeyPressed(Keys.D1))
+                {
+                    if (this.Items.Any(i => i.GetType().Name == "HealingPotion"))
+                    {
+                        this.UseItem(this.Items.First(i => i.GetType().Name == "HealingPotion"));
+                    }
+                }
             }
             if (Input.Manager.KeyPressed(Keys.Space) || IsHitting)
             {
                 PlayHitAnimation(gameTime);
             }
-
         }
 
         private void PlayHitAnimation(GameTime gameTime)

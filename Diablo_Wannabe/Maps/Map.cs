@@ -25,7 +25,7 @@ namespace Diablo_Wannabe.Maps
 
         public static void SpawnEnemies(GameTime gameTime)
         {
-            if ((int)gameTime.TotalGameTime.TotalMinutes - (int)EnemySpawner.TotalMinutes == 1
+            if ((int)gameTime.TotalGameTime.TotalSeconds - (int)EnemySpawner.TotalSeconds == 30
                 || EnemySpawner.Ticks == 0)
             {
                 EnemySpawner = gameTime.TotalGameTime;

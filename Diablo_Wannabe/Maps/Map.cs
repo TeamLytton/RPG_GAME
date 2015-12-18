@@ -27,6 +27,8 @@ namespace Diablo_Wannabe.Maps
             Enemies = new List<Enemy>(); 
             Enemies.Add(new OrcMace(new Vector2(500,300)));
             Enemies.Add(new OrcMace(new Vector2(650,200)));
+            Enemies.Add(new OrcMace(new Vector2(500, 150)));
+            Enemies.Add(new OrcMace(new Vector2(650, 100)));
             foreach (var enemy in Enemies)
             {
                 enemy.LoadContent();

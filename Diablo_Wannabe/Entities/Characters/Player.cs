@@ -192,13 +192,16 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public void TakeDamage(int damage, GameTime gameTime)
         {
-            if (damage - Armor > 0)
+            if (this.IsAlive)
             {
-                this.Health -= damage - Armor;
-            }
-            if (this.Health <= 0 && IsAlive)
-            {
-                this.Die(gameTime);
+                if (damage - Armor > 0)
+                {
+                    this.Health -= damage - Armor;
+                }
+                if (this.Health <= 0 && IsAlive)
+                {
+                    this.Die(gameTime);
+                }
             }
         }
 
@@ -215,12 +218,12 @@ namespace Diablo_Wannabe.Entities.Characters
 
         protected virtual void PlayDeathAnimation(GameTime gameTime)
         {
-            if ((gameTime.TotalGameTime.Milliseconds - this.LastAction.Milliseconds > 80 && this.Sprites[3].CurrentFrame.X < 6)
-                || (int)this.Sprites[3].CurrentFrame.X == 0
-                || (int)this.Sprites[3].CurrentFrame.X == 1)
+            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 100
+                && this.Sprites[3].CurrentFrame.X < 6)
             {
                 this.LastAction = gameTime.TotalGameTime;
                 this.Sprites[3].CurrentFrame.X++;
+                this.Sprites[3].Update();
             }
         }
 
@@ -318,7 +321,6 @@ namespace Diablo_Wannabe.Entities.Characters
             }
             else
             {
-                this.Sprites[3].Update();
                 PlayDeathAnimation(gameTime);
             }
         }

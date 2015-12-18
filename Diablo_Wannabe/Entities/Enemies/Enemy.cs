@@ -76,13 +76,16 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         public void TakeDamage(int damage, GameTime gameTime)
         {
-            if (damage - Armor > 0)
+            if (this.IsAlive)
             {
-                this.Health -= damage - Armor;
-            }
-            if (this.Health <= 0 && IsAlive)
-            {
-                this.Die(gameTime);
+                if (damage - Armor > 0)
+                {
+                    this.Health -= damage - Armor;
+                }
+                if (this.Health <= 0 && IsAlive)
+                {
+                    this.Die(gameTime);
+                }
             }
         }
 
@@ -100,9 +103,8 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         protected virtual void PlayDeathAnimation(GameTime gameTime)
         {
-            if ((gameTime.TotalGameTime.Milliseconds - this.LastAction.Milliseconds > 80 && this.Sprites[2].CurrentFrame.X < 6)
-                || (int)this.Sprites[2].CurrentFrame.X == 0
-                || (int)this.Sprites[2].CurrentFrame.X == 1)
+            if ((gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds) > 100 
+                    && this.Sprites[2].CurrentFrame.X < 6)
             {
                 this.LastAction = gameTime.TotalGameTime;
                 this.Sprites[2].CurrentFrame.X++;
@@ -241,38 +243,44 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         public override void Update(GameTime gameTime)
         {
-            if (!IsAlive)
+            if (IsAlive)
+            {
+                this.BoundingBox.X = (int)this.Position.X - 16;
+                this.BoundingBox.Y = (int)this.Position.Y - 16;
+                Debug.WriteLine("ER - " + this.BoundingBox.X + " " + this.BoundingBox.Y);
+                Debug.WriteLine("EP - " + this.Position.X + " " + this.Position.Y);
+
+                Sprites[0].Update();
+
+
+                if (CalculateDistance(this.Position, Map.Player.Position) < 150
+                    && Map.Player.IsAlive)
+                {
+                    if (CalculateDistance(this.Position, Map.Player.Position) > 40)
+                    {
+                        this.Move(gameTime);
+                    }
+                    else
+                    {
+                        PlayHitAnimation(gameTime);
+                    }
+
+                    if (IsHitting)
+                    {
+                        Sprites[1].Update();
+                    }
+                }              
+                else
+                {
+                    this.IsHitting = false;
+                }
+            }
+            else
             {
                 PlayDeathAnimation(gameTime);
                 Sprites[2].Update();
                 this.BoundingBox = Rectangle.Empty;
-                return;
-            }
-
-            this.BoundingBox.X = (int)this.Position.X - 16;
-            this.BoundingBox.Y = (int)this.Position.Y - 16;
-            Debug.WriteLine("ER - " + this.BoundingBox.X + " " + this.BoundingBox.Y);
-            Debug.WriteLine("EP - " + this.Position.X + " " + this.Position.Y);
-
-            if (CalculateDistance(this.Position, Map.Player.Position) < 150)
-            {
-                if (CalculateDistance(this.Position, Map.Player.Position) > 40)
-                {
-                    this.Move(gameTime);
-                }
-                else
-                {
-                    PlayHitAnimation(gameTime);
-                }
-            }
-            if (IsHitting)
-            {
-                Sprites[1].Update();
-            }
-            else
-            {
-                Sprites[0].Update();
-            }
+            }        
         }
 
         public override void Draw(SpriteBatch spriteBatch)

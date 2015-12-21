@@ -10,14 +10,15 @@ namespace Diablo_Wannabe.Entities.Characters
     public class Knight : Player
     {
         private const int KnightDefaultMoveSpeed = 3;
-        private const int KnightDefaultWeaponRange = 50;
+        private const int KnightDefaultWeaponRange = 60;
         private const int KnightDefaultHealth = 120;
-        private const int KnightDefaultArmor = 40;
-        private const int KnightDefaultDamage = 50;
+        private const int KnightDefaultArmor = 60;
+        private const int KnightDefaultDamage = 60;
+        private const int KnightDefaultAttackRate = 90;
         private const string DefaultPath = "Entities/player-knight-";
 
         public Knight() 
-            : base(KnightDefaultMoveSpeed, KnightDefaultWeaponRange, KnightDefaultHealth, KnightDefaultArmor, KnightDefaultDamage)
+            : base(KnightDefaultMoveSpeed, KnightDefaultWeaponRange, KnightDefaultHealth, KnightDefaultArmor, KnightDefaultDamage, KnightDefaultAttackRate)
         {
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, DefaultPath + "walk");
             this.Sprites[1] = new SpriteSheet(8, 4, this.Position, DefaultPath + "hitting");
@@ -31,7 +32,8 @@ namespace Diablo_Wannabe.Entities.Characters
         public override void Move(GameTime gameTime)
         {
             base.Move(gameTime);
-            if (Input.Instance.KeyPressed(Keys.Space) || IsHitting)
+            if (Input.Instance.MouseState.LeftButton == ButtonState.Pressed ||
+                Input.Instance.KeyPressed(Keys.Space) || IsHitting)
             {
                 PlayHitAnimation(gameTime);
             }
@@ -47,7 +49,7 @@ namespace Diablo_Wannabe.Entities.Characters
                 this.Sprites[1].CurrentFrame.X = 0;
             }
             this.IsHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 100
+            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > AttackRate
                 && (int)this.Sprites[1].CurrentFrame.X != 5)
             {
                 this.Sprites[1].CurrentFrame.X += 1;

@@ -51,6 +51,7 @@
     <Compile Include="Entities\Enemies\OrcMace.cs" />
     <Compile Include="Entities\Characters\Player.cs" />
     <Compile Include="Entities\Items\ArmorIncreaseCrystal.cs" />
+    <Compile Include="Entities\Items\AttackRateIncreaseCrystal.cs" />
     <Compile Include="Entities\Items\DamageIncreaseCrystal.cs" />
     <Compile Include="Entities\Items\HealingPotion.cs" />
     <Compile Include="Entities\Items\HealthIncreaseCrystal.cs" />

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using Diablo_Wannabe.Entities.Items;
 using Diablo_Wannabe.Entities.StatsBars;
 using Diablo_Wannabe.ImageProcessing;
+using Diablo_Wannabe.Interfaces;
 using Diablo_Wannabe.Maps;
 using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
@@ -16,15 +16,19 @@ namespace Diablo_Wannabe.Entities.Enemies
         private HealthBar healthBar;
         private Random rnd;
         protected string path;
-        private bool HasStucked;
-        private TimeSpan lastMove;
+        private bool CanMoveUp;
+        private bool CanMoveDown;
+        private bool CanMoveLeft;
+        private bool CanMoveRight;
+        private bool movementExecuted;
 
-        protected Enemy(Vector2 position, string path, int movementSpeed, int health, int weaponRange, int armor, int damage)
+        protected Enemy(Vector2 position, string path, int movementSpeed, int health, int weaponRange, int armor, int damage, int attackRate)
         {
             this.path = path;
             this.Position = position;
             this.Sprites = new SpriteSheet[3];
             this.MovementSpeed = movementSpeed;
+            this.AttackRate = attackRate;
             this.MaxHealth = health;
             this.Health = health;
             this.Armor = armor;
@@ -38,46 +42,8 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         public new void Move(GameTime gameTime)
         {
-                if (this.Position.Y <= Map.Player.Position.Y)
-                {
-                    this.Sprites[0].CurrentFrame.Y = 2;
-
-                    if (CheckForCollision(0, (int)this.MovementSpeed))
-                    {
-                        this.MoveDown(gameTime);
-                    }
-                }
-                if (this.Position.Y > Map.Player.Position.Y)
-                {
-                    this.Sprites[0].CurrentFrame.Y = 0;
-
-                    if (CheckForCollision(0, (int) -this.MovementSpeed))
-                    {
-                        this.MoveUp(gameTime);
-                    }
-                }
-
-                if (Math.Abs(this.Position.Y - Map.Player.Position.Y) < 2)
-                {
-                    if (this.Position.X <= Map.Player.Position.X)
-                    {
-                        this.Sprites[0].CurrentFrame.Y = 3;
-
-                        if (CheckForCollision((int)this.MovementSpeed, 0))
-                        {
-                            this.MoveRight(gameTime);
-                        }
-                    }
-                    else if (this.Position.X > Map.Player.Position.X)
-                    {
-                        this.Sprites[0].CurrentFrame.Y = 1;
-
-                        if (CheckForCollision((int)-this.MovementSpeed,0))
-                        {
-                            this.MoveLeft(gameTime);
-                        }
-                    }
-                }
+            GetPossibleMovementDirections();
+            ExecuteMovement(gameTime, Map.Player.Position);
         }
 
         public void TakeDamage(int damage, GameTime gameTime)
@@ -117,17 +83,17 @@ namespace Diablo_Wannabe.Entities.Enemies
             }
         }
 
-        protected virtual void PlayHitAnimation(GameTime gameTime)
+        protected virtual void PlayHitAnimation(GameTime gameTime, Unit target)
         {
             if (!IsHitting)
             {
                 this.LastAction = gameTime.TotalGameTime;
                 this.Sprites[1].Position = this.Position;
-                this.Sprites[1].CurrentFrame.Y = this.Sprites[0].CurrentFrame.Y;
+                this.Sprites[1].CurrentFrame.Y = CalculateBestAttackFrame(target);
                 this.Sprites[1].CurrentFrame.X = 0;
             }
             this.IsHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 100
+            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > AttackRate
                 && (int)this.Sprites[1].CurrentFrame.X != 5)
             {
                 this.Sprites[1].CurrentFrame.X += 1;
@@ -141,6 +107,19 @@ namespace Diablo_Wannabe.Entities.Enemies
             {
                 IsHitting = false;
             }
+        }
+
+        private float CalculateBestAttackFrame(Unit target)
+        {
+            if (this.Position.X == target.Position.X)
+            {
+                return this.Position.Y < target.Position.Y ? 2 : 0;
+            }
+            if (this.Position.Y == target.Position.Y)
+            {
+                return this.Position.X < target.Position.X ? 3 : 1;
+            }
+            return 0;
         }
 
         private void CheckForHit(GameTime gameTime)
@@ -207,7 +186,6 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         protected virtual void MoveUp(GameTime gameTime)
         {
-            this.lastMove = gameTime.TotalGameTime;
             this.Position.Y -= this.MovementSpeed;
             this.Sprites[0].Position = this.Position;
             this.IsHitting = false;
@@ -220,7 +198,6 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         protected virtual void MoveDown(GameTime gameTime)
         {
-            this.lastMove = gameTime.TotalGameTime;
             this.Position.Y += this.MovementSpeed;
             this.Sprites[0].Position = this.Position;
             this.IsHitting = false;
@@ -233,7 +210,6 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         protected virtual void MoveLeft(GameTime gameTime)
         {
-            this.lastMove = gameTime.TotalGameTime;
             this.Position.X -= this.MovementSpeed;
             this.Sprites[0].Position = this.Position;
             this.IsHitting = false;
@@ -246,7 +222,6 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         private void MoveRight(GameTime gameTime)
         {
-            this.lastMove = gameTime.TotalGameTime;
             this.Position.X += this.MovementSpeed;
             this.Sprites[0].Position = this.Position;
             this.IsHitting = false;
@@ -271,37 +246,27 @@ namespace Diablo_Wannabe.Entities.Enemies
 
         public override void Update(GameTime gameTime)
         {
-            if (this.lastMove.Ticks == 0)
-            {
-                this.lastMove = gameTime.TotalGameTime;
-            }
-
             if (IsAlive)
             {
-
-                if ((int) gameTime.TotalGameTime.TotalSeconds - (int) lastMove.TotalSeconds == 5
-                    && !IsHitting)
-                {
-                    //MoveInRandomDirection(gameTime);
-                }
-
                 if (CalculateDistance(this.Position, Map.Player.Position) < 150
                     && Map.Player.IsAlive)
                 {
-                    if (CalculateDistance(this.Position, Map.Player.Position) > WeaponRange)
+                    if (CalculateDistance(this.Position, Map.Player.Position) < WeaponRange
+                        && ((int)this.Position.X == (int)Map.Player.Position.X || (int)this.Position.Y == (int)Map.Player.Position.Y))
                     {
-                        this.Move(gameTime);
+                        PlayHitAnimation(gameTime, Map.Player);
                     }
                     else
                     {
-                        PlayHitAnimation(gameTime);
+                        this.Move(gameTime);
                     }
                 }
                 else
                 {
-                    if (this.CalculateDistance(this.Position, Map.Wife.Position) < WeaponRange)
+                    if (this.CalculateDistance(this.Position, Map.Wife.Position) < WeaponRange
+                        && ((int)this.Position.X == (int)Map.Wife.Position.X || (int)this.Position.Y == (int)Map.Wife.Position.Y))
                     {
-                        PlayHitAnimation(gameTime);
+                        PlayHitAnimation(gameTime, Map.Wife);
                     }
                     else
                     {
@@ -326,80 +291,95 @@ namespace Diablo_Wannabe.Entities.Enemies
             }        
         }
 
-        private void MoveInRandomDirection(GameTime gameTime)
-        {
-            rnd = new Random();
-            int movement = rnd.Next(0, 4);
-            switch (movement)
-            {
-                case 0:
-                    if (CheckForCollision(0, (int)-this.MovementSpeed))
-                    {
-                        this.MoveUp(gameTime);
-                    }
-                    break;
-                case 1:
-                    if (CheckForCollision(0, (int)this.MovementSpeed))
-                    {
-                        this.MoveDown(gameTime);
-                    }
-                    break;
-                case 2:
-                    if (CheckForCollision((int)-this.MovementSpeed, 0))
-                    {
-                        this.MoveLeft(gameTime);
-                    }
-                    break;
-                case 3:
-                    if (CheckForCollision((int)this.MovementSpeed, 0))
-                    {
-                        this.MoveRight(gameTime);
-                    }
-                    break;
-            }
-        }
-
         protected void MoveTowardsWife(GameTime gameTime)
         {
-            if (this.Position.Y <= Map.Wife.Position.Y)
-            {
-                this.Sprites[0].CurrentFrame.Y = 2;
+            GetPossibleMovementDirections();
+            ExecuteMovement(gameTime, Map.Wife.Position);
+        }
 
-                if (CheckForCollision(0, (int)this.MovementSpeed))
+        private void ExecuteMovement(GameTime gameTime, Vector2 destination)
+        {
+            movementExecuted = false;
+            if (this.Position.X > destination.X
+                && this.CanMoveLeft)
+            {
+                movementExecuted = true;
+                this.Sprites[0].CurrentFrame.Y = 1;
+                this.MoveLeft(gameTime);
+            }
+            else if(this.Position.X < destination.X
+                    && this.CanMoveRight)
+            {
+                movementExecuted = true;
+                this.Sprites[0].CurrentFrame.Y = 3;
+                this.MoveRight(gameTime);
+            }
+            else
+            {
+                if (this.Position.Y < destination.Y
+                    && this.CanMoveDown)
                 {
+                    movementExecuted = true;
+                    this.Sprites[0].CurrentFrame.Y = 2;
                     this.MoveDown(gameTime);
                 }
-            }
-            if (this.Position.Y > Map.Wife.Position.Y)
-            {
-                this.Sprites[0].CurrentFrame.Y = 0;
-
-                if (CheckForCollision(0, (int)-this.MovementSpeed))
+                else if(this.Position.Y > destination.Y
+                        && this.CanMoveUp)
                 {
+                    movementExecuted = true;
+                    this.Sprites[0].CurrentFrame.Y = 0;
                     this.MoveUp(gameTime);
                 }
             }
 
-            if (Math.Abs(this.Position.Y - Map.Wife.Position.Y) < 2)
+            if (!movementExecuted && (this.CanMoveDown))
             {
-                if (this.Position.X <= Map.Wife.Position.X)
-                {
-                    this.Sprites[0].CurrentFrame.Y = 3;
+                movementExecuted = true;
+                this.Sprites[0].CurrentFrame.Y = 2;
+                this.MoveDown(gameTime);
+            }
+            else if(!movementExecuted && this.CanMoveUp)
+            {
+                movementExecuted = true;
+                this.Sprites[0].CurrentFrame.Y = 0;
+                this.MoveUp(gameTime);
+            }
+            else if (!movementExecuted && this.CanMoveLeft)
+            {
+                movementExecuted = true;
+                this.Sprites[0].CurrentFrame.Y = 1;
+                this.MoveLeft(gameTime);
+            }
+            else if (!movementExecuted && this.CanMoveRight)
+            {
+                movementExecuted = true;
+                this.Sprites[0].CurrentFrame.Y = 3;
+                this.MoveRight(gameTime);
+            }
+        }
 
-                    if (CheckForCollision((int)this.MovementSpeed, 0))
-                    {
-                        this.MoveRight(gameTime);
-                    }
-                }
-                else if (this.Position.X > Map.Wife.Position.X)
-                {
-                    this.Sprites[0].CurrentFrame.Y = 1;
+        private void GetPossibleMovementDirections()
+        {
+            this.CanMoveUp = false;
+            this.CanMoveLeft = false;
+            this.CanMoveDown = false;
+            this.CanMoveRight = false;
 
-                    if (CheckForCollision((int)-this.MovementSpeed, 0))
-                    {
-                        this.MoveLeft(gameTime);
-                    }
-                }
+            if (CheckForCollision(0, -(int) this.MovementSpeed))
+            {
+                this.CanMoveUp = true;
+            }
+            if (CheckForCollision(0, (int) this.MovementSpeed))
+            {
+                this.CanMoveDown = true;
+            }
+            if (CheckForCollision(-(int) this.MovementSpeed, 0))
+            {
+                this.CanMoveLeft = true;
+            }
+            if (CheckForCollision((int) this.MovementSpeed, 0))
+            {
+                this.CanMoveRight = true;
             }
         }
 
@@ -460,7 +440,7 @@ namespace Diablo_Wannabe.Entities.Enemies
         {
             rnd = new Random();
 
-            int id = rnd.Next(0, 4);
+            int id = rnd.Next(0, 5);
 
             switch (id)
             {
@@ -475,6 +455,9 @@ namespace Diablo_Wannabe.Entities.Enemies
                     break;
                 case 3:
                     Map.DroppedItems.Add(new HealingPotion(this.Position));
+                    break;
+                case 4:
+                    Map.DroppedItems.Add(new AttackRateIncreaseCrystal(this.Position));
                     break;
             }
         }

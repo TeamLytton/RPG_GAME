@@ -24,11 +24,12 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public List<IItem> Items { get; set; }
 
-        public Player(int movementSpeed, int weaponRange, int health, int armor, int damage)
+        public Player(int movementSpeed, int weaponRange, int health, int armor, int damage, int attackRate)
         {
-            this.Position = new Vector2(ScreenManager.Instance.Dimensions.X / 6, ScreenManager.Instance.Dimensions.Y / 2);
+            this.Position = new Vector2((int)(ScreenManager.Instance.Dimensions.X / 6), (int)(ScreenManager.Instance.Dimensions.Y / 2));
             this.Sprites = new SpriteSheet[3];
             this.IsAlive = true;
+            this.AttackRate = attackRate;
             this.MovementSpeed = movementSpeed;
             this.WeaponRange = weaponRange;
             this.MaxHealth = health;
@@ -277,6 +278,7 @@ namespace Diablo_Wannabe.Entities.Characters
         {
             sb = new StringBuilder();
             sb.AppendLine("Damage: " + this.Damage);
+            sb.AppendLine("AttackRate: " + this.AttackRate);
             sb.AppendLine("Armor: " + this.Armor);
             sb.AppendLine("Health: " + this.Health);
             sb.AppendLine("Max Health: " + this.MaxHealth);

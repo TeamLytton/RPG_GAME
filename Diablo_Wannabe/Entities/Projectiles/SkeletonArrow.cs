@@ -57,6 +57,11 @@ namespace Diablo_Wannabe.Entities.Projectiles
                     Map.Player.TakeDamage(damage, gameTime);
                     this.Exists = false;
                 }
+                else if (Map.Wife.BoundingBox.Contains(this.Position.ToPoint()))
+                {
+                    Map.Wife.TakeDamage(damage);
+                    this.Exists = false;
+                }
 
                 if (Map.tiles.Any(t => !t.isPassable && t.BoundingBox.Contains(this.Position)))
                 {

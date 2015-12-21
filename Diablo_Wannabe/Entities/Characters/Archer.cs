@@ -16,13 +16,14 @@ namespace Diablo_Wannabe.Entities.Characters
         private const int ArcherDefaultHealth = 80;
         private const int ArcherDefaultArmor = 25;
         private const int ArcherDefaultDamage = 70;
+        private const int ArcherDefaultAttackRate = 35;
         private const string DefaultPath = "Entities/player-archer-";
 
         private List<IProjectile> arrowsShooted;
         private Vector2 mousePos;
 
         public Archer() 
-            : base(ArcherDefaultMoveSpeed, ArcherDefaultWeaponRange, ArcherDefaultHealth, ArcherDefaultArmor, ArcherDefaultDamage)
+            : base(ArcherDefaultMoveSpeed, ArcherDefaultWeaponRange, ArcherDefaultHealth, ArcherDefaultArmor, ArcherDefaultDamage, ArcherDefaultAttackRate)
         {
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, DefaultPath + "walking");
             this.Sprites[1] = new SpriteSheet(13, 4, this.Position, DefaultPath + "shooting");
@@ -68,7 +69,7 @@ namespace Diablo_Wannabe.Entities.Characters
                 mousePos = Input.Instance.MouseState.Position.ToVector2();
             }
             this.IsHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 35
+            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > AttackRate
                 && (int)this.Sprites[1].CurrentFrame.X != 12)
             {
                 this.Sprites[1].CurrentFrame.X += 1;

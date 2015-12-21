@@ -11,9 +11,10 @@ namespace Diablo_Wannabe.Entities.Enemies
         private const int DefaultWeaponRange = 50;
         private const int DefaultArmor = 100;
         private const int DefaultDamage = 300;
+        private const int DefaultAttackRate = 120;
 
         public Boss(Vector2 position) 
-            : base(position, DefaultPath, DefaultMovementSpeed, DefaultHealth, DefaultWeaponRange, DefaultArmor, DefaultDamage)
+            : base(position, DefaultPath, DefaultMovementSpeed, DefaultHealth, DefaultWeaponRange, DefaultArmor, DefaultDamage, DefaultAttackRate)
         {
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, path + "walking");
             this.Sprites[1] = new SpriteSheet(8, 4, this.Position, path + "hitting");

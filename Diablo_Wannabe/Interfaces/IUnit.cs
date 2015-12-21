@@ -12,5 +12,7 @@ namespace Diablo_Wannabe.Interfaces
         int Damage { get; set; }
 
         int WeaponRange { get; set; }
+
+        int AttackRate { get; set; }
     }
 }

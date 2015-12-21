@@ -16,7 +16,6 @@ namespace Diablo_Wannabe
             Content.RootDirectory = "Content";
         }
 
-
         protected override void Initialize()
         {
             this.graphics.PreferredBackBufferWidth = (int)ScreenManager.Instance.Dimensions.X;

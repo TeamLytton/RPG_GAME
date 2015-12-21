@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Xml.Serialization;
 using Diablo_Wannabe.Screens;
 using Microsoft.Xna.Framework;
@@ -28,8 +27,6 @@ namespace Diablo_Wannabe.ImageProcessing
         [XmlIgnore]
         public Texture2D Texture;
         public Rectangle SourceRect;
-
-
 
         public Image()
         {

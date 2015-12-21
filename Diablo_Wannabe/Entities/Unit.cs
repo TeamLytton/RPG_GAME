@@ -10,6 +10,7 @@ namespace Diablo_Wannabe.Entities
     {
         private int health;
         private int maxHealth;
+        private int attackrate;
 
         public float MovementSpeed;
 
@@ -35,6 +36,17 @@ namespace Diablo_Wannabe.Entities
         public int Armor { get; set; }
         public int Damage { get; set; }
         public int WeaponRange { get; set; }
+        public int AttackRate {
+            get { return this.attackrate; }
+            set
+            {
+                attackrate = value;
+                if (attackrate < 5)
+                {
+                    attackrate = 5;
+                }
+            }
+        }
 
         public TimeSpan LastAction;
         public TimeSpan LastTimeDamageTaken;

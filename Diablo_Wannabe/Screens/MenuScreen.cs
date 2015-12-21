@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Xml.Serialization;
 using Diablo_Wannabe.ImageProcessing;
 using Microsoft.Xna.Framework;
@@ -18,7 +19,6 @@ namespace Diablo_Wannabe.Screens
         private bool openOptions;
         private bool openCredits;
         private bool Quit;
-
 
         public MenuScreen()
         {
@@ -108,6 +108,23 @@ namespace Diablo_Wannabe.Screens
                         ScreenManager.Instance.CurrentScreen = new GameScreen();
                         ScreenManager.Instance.CurrentScreen.LoadContent();
                         startNewGame = false;
+                        hasAction = false;
+                    }
+                    else if (openOptions)
+                    {
+                        Debug.WriteLine("Options not implemented");
+                        openOptions = false;
+                        hasAction = false;
+                    }
+                    else if (openCredits)
+                    {
+                        Debug.WriteLine("Credits not implemented");
+                        openCredits = false;
+                        hasAction = false;
+                    }
+                    else if (Quit)
+                    {
+                        Environment.Exit(0);
                     }
                     else
                     {

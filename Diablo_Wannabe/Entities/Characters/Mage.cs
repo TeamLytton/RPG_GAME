@@ -1,4 +1,5 @@
-﻿using Diablo_Wannabe.ImageProcessing;
+﻿using System.Diagnostics;
+using Diablo_Wannabe.ImageProcessing;
 using Diablo_Wannabe.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,12 +14,13 @@ namespace Diablo_Wannabe.Entities.Characters
         private const int MageDefaultHealth = 70;
         private const int MageDefaultArmor = 20;
         private const int MageDefaultDamage = 25;
+        private const int MageDefultAttackRate = 60;
         private const string DefaultPath = "Entities/player-mage-";
 
         public bool IsCasting { get; set; }
 
         public Mage() 
-            : base(MageDefaultMoveSpeed, MageDefaultWeaponRange, MageDefaultHealth, MageDefaultArmor, MageDefaultDamage)
+            : base(MageDefaultMoveSpeed, MageDefaultWeaponRange, MageDefaultHealth, MageDefaultArmor, MageDefaultDamage, MageDefultAttackRate)
         {
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, DefaultPath + "walking");
             this.Sprites[1] = new SpriteSheet(7, 4, this.Position, DefaultPath + "casting");
@@ -42,7 +44,7 @@ namespace Diablo_Wannabe.Entities.Characters
         public override void Move(GameTime gameTime)
         {
             base.Move(gameTime);
-            if (Input.Instance.KeyPressed(Keys.A) 
+            if (Input.Instance.MouseState.LeftButton == ButtonState.Pressed 
                 || IsCasting)
             {
                 PlayCastAnimation(gameTime);
@@ -51,6 +53,7 @@ namespace Diablo_Wannabe.Entities.Characters
 
         public void PlayCastAnimation(GameTime gameTime)
         {
+            Debug.WriteLine("Not implemented");
         }
     }
 }

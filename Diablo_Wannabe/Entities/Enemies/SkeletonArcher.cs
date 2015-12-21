@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Diablo_Wannabe.Entities.Projectiles;
 using Diablo_Wannabe.ImageProcessing;
@@ -17,16 +18,13 @@ namespace Diablo_Wannabe.Entities.Enemies
         private const int DefaultWeaponRange = 170;
         private const int DefaultArmor = 0;
         private const int DefaultDamage = 15;
+        private const int DefaultAttackRate = 60;
 
         private List<IProjectile> arrowsShot;
-        private Vector2 playerPos;
-
         public SkeletonArcher(Vector2 position) 
-            : base(position, SkeletonArcherDefaultPath, DefaultMoveSpeed, DefaultHealth, DefaultWeaponRange, DefaultArmor, DefaultDamage)
+            : base(position, SkeletonArcherDefaultPath, DefaultMoveSpeed, DefaultHealth, DefaultWeaponRange, DefaultArmor, DefaultDamage, DefaultAttackRate)
         {
             this.arrowsShot = new List<IProjectile>();
-            this.playerPos = new Vector2();
-
             this.Sprites[0] = new SpriteSheet(9, 4, this.Position, path + "walking");
             this.Sprites[1] = new SpriteSheet(13, 4, this.Position, path + "shooting");
             this.Sprites[2] = new SpriteSheet(6, 1, this.Position, path + "death");
@@ -37,7 +35,7 @@ namespace Diablo_Wannabe.Entities.Enemies
             (int)this.Sprites[0].FrameDimensions.X / 2, (int)this.Sprites[0].FrameDimensions.Y / 2);
         }
 
-        public void PlayShootingAnimation(GameTime gameTime)
+        public void PlayShootingAnimation(GameTime gameTime, Vector2 position)
         {
             if (!IsHitting)
             {
@@ -45,16 +43,15 @@ namespace Diablo_Wannabe.Entities.Enemies
                 this.Sprites[1].Position = this.Position;
                 this.Sprites[1].CurrentFrame.Y = this.Sprites[0].CurrentFrame.Y;
                 this.Sprites[1].CurrentFrame.X = 0;
-                playerPos = Map.Player.Position;
             }
             this.IsHitting = true;
-            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > 80
+            if (gameTime.TotalGameTime.TotalMilliseconds - LastAction.TotalMilliseconds > AttackRate
                 && (int)this.Sprites[1].CurrentFrame.X != 12)
             {
                 this.Sprites[1].CurrentFrame.X += 1;
                 if ((int)this.Sprites[1].CurrentFrame.X == 8)
                 {
-                    ShootArrow(playerPos);
+                    ShootArrow(position);
                 }
                 LastAction = gameTime.TotalGameTime;
             }
@@ -74,15 +71,7 @@ namespace Diablo_Wannabe.Entities.Enemies
         {
             if (IsAlive)
             {
-                this.BoundingBox.X = (int)this.Position.X - 16;
-                this.BoundingBox.Y = (int)this.Position.Y - 16;
-                Debug.WriteLine("ER - " + this.BoundingBox.X + " " + this.BoundingBox.Y);
-                Debug.WriteLine("EP - " + this.Position.X + " " + this.Position.Y);
-
-                Sprites[0].Update();
-
-
-                if (CalculateDistance(this.Position, Map.Player.Position) < WeaponRange + 100
+                if (CalculateDistance(this.Position, Map.Player.Position) < 150
                     && Map.Player.IsAlive)
                 {
                     if (CalculateDistance(this.Position, Map.Player.Position) > WeaponRange)
@@ -91,18 +80,42 @@ namespace Diablo_Wannabe.Entities.Enemies
                     }
                     else
                     {
-                        PlayShootingAnimation(gameTime);
-                    }
-
-                    if (IsHitting)
-                    {
-                        Sprites[1].Update();
+                        if (this.Position.Y > Map.Player.Position.X 
+                            && this.Position.X >= Map.Player.Position.X)
+                        {
+                            if (Math.Abs(Map.Player.Position.Y-this.Position.Y) 
+                                < Math.Abs(Map.Player.Position.X - this.Position.X))
+                            {
+                                this.Sprites[0].CurrentFrame.Y = 0;
+                            }
+                            else
+                            {
+                                this.Sprites[0].CurrentFrame.Y = 1;
+                            }
+                        }
+                        PlayShootingAnimation(gameTime, Map.Player.Position);
                     }
                 }
                 else
                 {
-                    this.MoveTowardsWife(gameTime);
+                    if (this.CalculateDistance(this.Position, Map.Wife.Position) < WeaponRange)
+                    {
+                        PlayShootingAnimation(gameTime, Map.Wife.Position);
+                    }
+                    else
+                    {
+                        this.MoveTowardsWife(gameTime);
+                    }
                 }
+
+                Sprites[0].Update();
+
+                if (IsHitting)
+                {
+                    Sprites[1].Update();
+                }
+                this.BoundingBox.X = (int)this.Position.X - 16;
+                this.BoundingBox.Y = (int)this.Position.Y - 16;
             }
             else
             {
@@ -118,6 +131,10 @@ namespace Diablo_Wannabe.Entities.Enemies
         {
             base.Draw(spriteBatch);
             this.arrowsShot.ForEach(a => a.Draw(spriteBatch));
+        }
+
+        public void PlayShootingAnimation(GameTime gameTime)
+        {
         }
     }
 }

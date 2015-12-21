@@ -17,17 +17,17 @@ namespace Diablo_Wannabe.Maps
         public static List<Tile> tiles;
         private static int posX;
         private static int posY;
+        private static int Wave;
         public static Player Player;
         public static Wife Wife;
         public static List<Enemy> Enemies;
         public static List<IItem> DroppedItems;
         public static SpriteFont sf;
         private static TimeSpan EnemySpawner;
-        private static int Wave;
 
         public static void SpawnEnemies(GameTime gameTime)
         {
-            if ((int)gameTime.TotalGameTime.TotalSeconds - (int)EnemySpawner.TotalSeconds == 30
+            if ((int)gameTime.TotalGameTime.TotalSeconds - (int)EnemySpawner.TotalSeconds == 40
                 || EnemySpawner.Ticks == 0)
             {
                 Random rnd = new Random();
@@ -36,7 +36,7 @@ namespace Diablo_Wannabe.Maps
                 {
                     case 1:
                         EnemySpawner = gameTime.TotalGameTime;
-                        enemiesToSpawn = 10;
+                        enemiesToSpawn = 5;
 
                         for (int i = 0; i < enemiesToSpawn; i++)
                         {
@@ -58,7 +58,7 @@ namespace Diablo_Wannabe.Maps
                     case 2:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
-                        enemiesToSpawn = 15;
+                        enemiesToSpawn = 10;
 
                         for (int i = 0; i < enemiesToSpawn; i++)
                         {
@@ -80,7 +80,7 @@ namespace Diablo_Wannabe.Maps
                     case 3:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
-                        enemiesToSpawn = 30;
+                        enemiesToSpawn = 15;
 
                         for (int i = 0; i < enemiesToSpawn; i++)
                         {
@@ -102,7 +102,7 @@ namespace Diablo_Wannabe.Maps
                     case 4:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
-                        enemiesToSpawn = 45;
+                        enemiesToSpawn = 20;
 
                         for (int i = 0; i < enemiesToSpawn; i++)
                         {
@@ -126,12 +126,12 @@ namespace Diablo_Wannabe.Maps
                     case 5:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
-                        enemiesToSpawn = 60;
+                        enemiesToSpawn = 30;
 
                         for (int i = 0; i < enemiesToSpawn; i++)
                         {
-                            int posToSpawnX = rnd.Next(400, 760);
-                            int posToSpawnY = rnd.Next(30, 600);
+                            int posToSpawnX = rnd.Next(400, 750);
+                            int posToSpawnY = rnd.Next(50, 550);
 
 
 
@@ -148,10 +148,11 @@ namespace Diablo_Wannabe.Maps
                         Wave++;
                         break;
                     case 6:
-                        Enemies.Add(new Boss(new Vector2(ScreenManager.Instance.Dimensions.X, ScreenManager.Instance.Dimensions.Y/2)));
+                        EnemySpawner = gameTime.TotalGameTime;
+                        CreateEnemy(4, (int)(ScreenManager.Instance.Dimensions.X - 70), (int)(ScreenManager.Instance.Dimensions.Y / 2));
+                        Wave++;
                         break;
-                }
-                
+                }            
             }
         }
 
@@ -160,16 +161,19 @@ namespace Diablo_Wannabe.Maps
             switch (enemyType)
             {
                 case 0:
-                    Enemies.Add(new SkeletonArcher(new Vector2(posToSpawnX, posToSpawnY)));
+                    Enemies.Add(new DarkElfSpear(new Vector2(posToSpawnX, posToSpawnY)));
                     break;
                 case 1:
-                    Enemies.Add(new DarkElfSpear(new Vector2(posToSpawnX, posToSpawnY)));
+                    Enemies.Add(new SkeletonArcher(new Vector2(posToSpawnX, posToSpawnY)));
                     break;
                 case 2:
                     Enemies.Add(new OrcMace(new Vector2(posToSpawnX, posToSpawnY)));
                     break;
                 case 3:
                     Enemies.Add(new RedOrcTrident(new Vector2(posToSpawnX, posToSpawnY)));
+                    break;
+                case 4:
+                    Enemies.Add(new Boss(new Vector2(posToSpawnX, posToSpawnY)));
                     break;
             }
         }

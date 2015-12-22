@@ -16,7 +16,7 @@ namespace Diablo_Wannabe.Entities.Characters
         private const int ArcherDefaultHealth = 80;
         private const int ArcherDefaultArmor = 25;
         private const int ArcherDefaultDamage = 70;
-        private const int ArcherDefaultAttackRate = 35;
+        private const int ArcherDefaultAttackRate = 30;
         private const string DefaultPath = "Entities/player-archer-";
 
         private List<IProjectile> arrowsShooted;

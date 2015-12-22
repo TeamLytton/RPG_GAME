@@ -32,119 +32,55 @@ namespace Diablo_Wannabe.Maps
             {
                 Random rnd = new Random();
                 int enemiesToSpawn = 0;
+                int weakestType = 0;
+                int strongestType = 0;
                 switch (Wave)
                 {
                     case 1:
                         EnemySpawner = gameTime.TotalGameTime;
                         enemiesToSpawn = 5;
+                        weakestType = 0;
+                        strongestType = 2;
+                        SpawnLogic(enemiesToSpawn, rnd, weakestType, strongestType);
 
-                        for (int i = 0; i < enemiesToSpawn; i++)
-                        {
-                            int posToSpawnX = rnd.Next(400, 760);
-                            int posToSpawnY = rnd.Next(30, 600);
-
-                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                            {
-                                i--;
-                                continue;
-                            }
-
-                            int enemyType = rnd.Next(0, 2);
-                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
-                        }
                         Wave++;
                         break;
                     case 2:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
                         enemiesToSpawn = 10;
+                        weakestType = 0;
+                        strongestType = 3;
+                        SpawnLogic(enemiesToSpawn, rnd, weakestType, strongestType);
 
-                        for (int i = 0; i < enemiesToSpawn; i++)
-                        {
-                            int posToSpawnX = rnd.Next(400, 760);
-                            int posToSpawnY = rnd.Next(30, 600);
-
-                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                            {
-                                i--;
-                                continue;
-                            }
-
-                            int enemyType = rnd.Next(0, 3);
-                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
-                        }
                         Wave++;
                         break;
                     case 3:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
                         enemiesToSpawn = 15;
-
-                        for (int i = 0; i < enemiesToSpawn; i++)
-                        {
-                            int posToSpawnX = rnd.Next(400, 760);
-                            int posToSpawnY = rnd.Next(30, 600);
-
-                           if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                            {
-                                i--;
-                                continue;
-                            }
-
-                            int enemyType = rnd.Next(0, 4);
-                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
-                        }
+                        weakestType = 0;
+                        strongestType = 3;
+                        SpawnLogic(enemiesToSpawn, rnd, weakestType, strongestType);
                         Wave++;
                         break;
                     case 4:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
                         enemiesToSpawn = 20;
-
-                        for (int i = 0; i < enemiesToSpawn; i++)
-                        {
-                            int posToSpawnX = rnd.Next(400, 760);
-                            int posToSpawnY = rnd.Next(30, 600);
-
-
-
-                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                            {
-                                i--;
-                                continue;
-                            }
-
-                            int enemyType = rnd.Next(0, 4);
-                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
-                        }
+                        weakestType = 0;
+                        strongestType = 4;
+                        SpawnLogic(enemiesToSpawn, rnd, weakestType, strongestType);
                         Wave++;
                         break;
                     case 5:
                         EnemySpawner = gameTime.TotalGameTime;
                         rnd = new Random();
                         enemiesToSpawn = 30;
+                        weakestType = 0;
+                        strongestType = 4;
+                        SpawnLogic(enemiesToSpawn, rnd, weakestType, strongestType);
 
-                        for (int i = 0; i < enemiesToSpawn; i++)
-                        {
-                            int posToSpawnX = rnd.Next(400, 750);
-                            int posToSpawnY = rnd.Next(50, 550);
-
-
-
-                            if (Enemies.Any(e => e.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                                || Player.BoundingBox.Contains(posToSpawnX, posToSpawnY))
-                            {
-                                i--;
-                                continue;
-                            }
-
-                            int enemyType = rnd.Next(0, 4);
-                            CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
-                        }
                         Wave++;
                         break;
                     case 6:
@@ -153,6 +89,32 @@ namespace Diablo_Wannabe.Maps
                         Wave++;
                         break;
                 }            
+            }
+        }
+
+        private static void SpawnLogic(int enemiesToSpawn, Random rnd, int typeWeakest, int typeStrongest)
+        {
+            for (int i = 0; i < enemiesToSpawn; i++)
+            {
+                int posToSpawnX = rnd.Next(400, 760);
+                int posToSpawnY = rnd.Next(30, 600);
+                Rectangle rect = Rectangle.Empty;
+                if (Enemies.Any(e =>
+                {
+                    rect = e.BoundingBox;
+                    rect.X -= 20;
+                    rect.Y -= 20;
+                    rect.Width += 40;
+                    rect.Height += 40;
+                    return rect.Contains(posToSpawnX, posToSpawnY);
+                }))
+                {
+                    i--;
+                    continue;
+                }
+
+                int enemyType = rnd.Next(typeWeakest, typeStrongest);
+                CreateEnemy(enemyType, posToSpawnX, posToSpawnY);
             }
         }
 
